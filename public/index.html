@@ -9,18 +9,15 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Roboto',Arial,sans-serif;background:#f5f5f5;color:#171717;min-height:100vh}
 
-/* HEADER - estilo email */
-.header-balloon{background:#ffe0e8;padding:20px 24px 0;text-align:center}
-.header-logo{display:block;margin:0 auto 16px;height:52px;width:auto}
-.header-menu{background:#ff3c6f;display:flex;justify-content:center;gap:0}
-.header-menu a{color:#fff;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;text-decoration:none;padding:13px 28px;letter-spacing:.5px;transition:background .15s}
-.header-menu a:hover{background:rgba(0,0,0,.12)}
+/* HEADER - só logo rosa, sem barra de menu */
+.header{background:#ffe0e8;padding:20px 24px 20px;text-align:center}
+.header-logo{display:block;margin:0 auto;height:54px;width:auto}
 
-/* CONTAINER */
-.container{max-width:640px;margin:0 auto;padding:24px 16px 40px}
+/* CONTAINER - mais largo */
+.container{max-width:1100px;margin:0 auto;padding:24px 24px 40px}
 
 /* CARD */
-.card{background:#fff;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 1px 6px rgba(0,0,0,.08)}
+.card{background:#fff;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 1px 6px rgba(0,0,0,.07)}
 
 /* CONTROLS */
 .controls{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
@@ -33,10 +30,10 @@ body{font-family:'Roboto',Arial,sans-serif;background:#f5f5f5;color:#171717;min-
 .btn:disabled{opacity:.5;cursor:not-allowed}
 
 /* STATS */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px}
-.stat{background:#fff5f7;border-radius:12px;padding:14px 10px;text-align:center;border:1.5px solid #ffe0e8}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+.stat{background:#fff5f7;border-radius:12px;padding:16px 12px;text-align:center;border:1.5px solid #ffe0e8}
 .stat-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.5px}
-.stat-value{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:700;margin-top:3px;color:#171717}
+.stat-value{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:700;margin-top:4px;color:#171717}
 .sv-green{color:#00a86b}.sv-orange{color:#ff7c1d}.sv-red{color:#ff3c6f}
 
 /* PROGRESS */
@@ -55,13 +52,13 @@ body{font-family:'Roboto',Arial,sans-serif;background:#f5f5f5;color:#171717;min-
 .ebtn:hover{background:#fff5f7}
 
 /* TABLE */
-.table-wrap{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.08)}
+.table-wrap{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.07)}
 table{width:100%;border-collapse:collapse;font-size:13px}
-thead th{padding:11px 16px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #ffe0e8;background:#fff5f7}
+thead th{padding:12px 18px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #ffe0e8;background:#fff5f7}
 tbody tr{border-bottom:1px solid #fff0f4}
 tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:#fffafb}
-tbody td{padding:12px 16px;vertical-align:middle}
+tbody td{padding:13px 18px;vertical-align:middle}
 .badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;font-family:'Montserrat',sans-serif}
 .b-ok{background:#e6f9f2;color:#00a86b}
 .b-div{background:#fff3e6;color:#ff7c1d}
@@ -77,28 +74,16 @@ tbody td{padding:12px 16px;vertical-align:middle}
 .empty b{color:#ff3c6f}
 .err{background:#ffe8ee;color:#ff3c6f;border-radius:10px;padding:12px 16px;font-size:13px;margin-top:12px;border:1.5px solid #ffb3c6}
 
-/* FOOTER */
-.footer{background:#ffe0e8;border-radius:16px;padding:20px 16px;text-align:center;margin-top:8px}
-.footer-btns{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.footer-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:#fff;text-decoration:none}
-.footer-btn.pink{background:#ff7cae}
-.footer-btn.red{background:#ff3c6f}
-.footer-btn.teal{background:#00c7a0}
-.footer-text{font-family:'Roboto',sans-serif;font-size:11px;color:#888;margin-top:8px}
-.footer-copy{font-family:'Roboto',sans-serif;font-size:10px;color:#bbb;margin-top:10px}
+/* FOOTER - só logo horizontal */
+.footer{text-align:center;padding:28px 0 32px}
+.footer-logo{height:36px;width:auto;opacity:.85}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="header-balloon">
+<!-- HEADER - só logo, sem barra de menu -->
+<div class="header">
   <img class="header-logo" src="https://cdn.awsli.com.br/1930/1930166/arquivos/logo-principal-dra--charm.png" alt="Dra. Charm">
-</div>
-<div class="header-menu">
-  <a href="https://www.dracharm.com.br">SCRUBS</a>
-  <a href="https://www.dracharm.com.br">JALECOS</a>
-  <a href="https://www.dracharm.com.br">TOUCAS</a>
-  <a href="https://www.dracharm.com.br">TODOS</a>
 </div>
 
 <div class="container">
@@ -121,10 +106,10 @@ tbody td{padding:12px 16px;vertical-align:middle}
   <!-- STATS + TABELA -->
   <div id="mainArea" style="display:none">
     <div class="stats">
-      <div class="stat"><div class="stat-label">Total</div><div class="stat-value" id="sTotal">0</div></div>
+      <div class="stat"><div class="stat-label">Total de pedidos</div><div class="stat-value" id="sTotal">0</div></div>
       <div class="stat"><div class="stat-label">CEP OK</div><div class="stat-value sv-green" id="sOk">0</div></div>
       <div class="stat"><div class="stat-label">Divergência</div><div class="stat-value sv-orange" id="sDiv">0</div></div>
-      <div class="stat"><div class="stat-label">Inválido</div><div class="stat-value sv-red" id="sInv">0</div></div>
+      <div class="stat"><div class="stat-label">CEP Inválido</div><div class="stat-value sv-red" id="sInv">0</div></div>
     </div>
 
     <div class="filters">
@@ -132,7 +117,7 @@ tbody td{padding:12px 16px;vertical-align:middle}
       <button class="fbtn a-ok" data-f="ok">✓ OK</button>
       <button class="fbtn a-div" data-f="divergencia">⚠ Divergência</button>
       <button class="fbtn" data-f="invalido">✗ Inválido</button>
-      <button class="ebtn" id="btnEx">↓ Exportar</button>
+      <button class="ebtn" id="btnEx">↓ Exportar divergências</button>
     </div>
 
     <div class="table-wrap">
@@ -153,20 +138,15 @@ tbody td{padding:12px 16px;vertical-align:middle}
     </div>
   </div>
 
-  <!-- FOOTER -->
+  <!-- FOOTER - só logo horizontal -->
   <div class="footer">
-    <div class="footer-btns">
-      <a class="footer-btn pink" href="https://dracharm.troque.app.br/">🔄 Trocas</a>
-      <a class="footer-btn red" href="https://dracharm.cademeupedido.com.br/">📦 Rastrear</a>
-      <a class="footer-btn teal" href="https://api.whatsapp.com/send?phone=5585987015980">💬 WhatsApp</a>
-    </div>
-    <div class="footer-text">Atendimento: Seg–Qui 08h–17h · Sex 08h–16h (Brasília)</div>
-    <div class="footer-copy">© Dra. Charm — Validador de CEP · Uso interno</div>
+    <img class="footer-logo" src="https://cdn.awsli.com.br/1930/1930166/arquivos/logo-principal-horizontal.png" alt="Dra. Charm">
   </div>
 
 </div>
 
 <script>
+
 
 const g = id => document.getElementById(id);
 const todayStr = () => new Date().toISOString().slice(0,10);
@@ -355,6 +335,7 @@ g('btnB').onclick=async()=>{
   }
   g('btnB').disabled=false; g('btnB').textContent='Buscar pedidos';
 };
+
 
 </script>
 </body>
