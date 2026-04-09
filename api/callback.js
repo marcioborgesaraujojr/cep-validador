@@ -1,34 +1,74 @@
+// Callback do OAuth Bling — salva o refresh token no Edge Config (solucao definitiva)
 const PROJ = "prj_ErH4xc9FokreQHv0utp1xJ2eGvdO";
 const TEAM = "team_Hv0Wqku1l7HhDDiJZmR2u5Ze";
 
-async function salvarTokenNoVercel(refreshToken) {
-  if (!process.env.VERCEL_TOKEN) return false;
+function parseEC() {
   try {
-    // Busca o ID dinamico do env BLING_REFRESH_TOKEN
-    const listR = await fetch(
-      "https://api.vercel.com/v9/projects/" + PROJ + "/env?teamId=" + TEAM,
-      { headers: { Authorization: "Bearer " + process.env.VERCEL_TOKEN } }
-    );
-    const listD = await listR.json();
-    const env = (listD.envs || []).find(e => e.key === "BLING_REFRESH_TOKEN");
-    if (!env) return false;
+    const u = new URL(process.env.EDGE_CONFIG || "");
+    const ecId = u.pathname.replace(/^\//, "");
+    const token = u.searchParams.get("token");
+    return ecId && token ? { ecId, token } : null;
+  } catch (_) { return null; }
+}
 
-    const patchR = await fetch(
-      "https://api.vercel.com/v9/projects/" + PROJ + "/env/" + env.id + "?teamId=" + TEAM,
-      {
-        method: "PATCH",
-        headers: { Authorization: "Bearer " + process.env.VERCEL_TOKEN, "Content-Type": "application/json" },
-        body: JSON.stringify({ value: refreshToken }),
-      }
-    );
-    return patchR.ok;
-  } catch (_) {
-    return false;
+async function salvarToken(refreshToken) {
+  const results = [];
+
+  // 1. Salva no Edge Config (principal — sem caching, dinamico)
+  const ec = parseEC();
+  if (ec && process.env.VERCEL_TOKEN) {
+    try {
+      const r = await fetch(
+        "https://api.vercel.com/v1/edge-config/" + ec.ecId + "/items",
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: "Bearer " + process.env.VERCEL_TOKEN,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            items: [{ operation: "upsert", key: "bling_refresh_token", value: refreshToken }]
+          }),
+        }
+      );
+      results.push("Edge Config: " + (r.ok ? "OK" : "ERRO " + r.status));
+    } catch (e) {
+      results.push("Edge Config: EXCECAO " + e.message);
+    }
+  } else {
+    results.push("Edge Config: NAO CONFIGURADO");
   }
+
+  // 2. Salva na env var do Vercel (fallback — pode ter delay de caching)
+  if (process.env.VERCEL_TOKEN) {
+    try {
+      const listR = await fetch(
+        "https://api.vercel.com/v9/projects/" + PROJ + "/env?teamId=" + TEAM,
+        { headers: { Authorization: "Bearer " + process.env.VERCEL_TOKEN } }
+      );
+      const listD = await listR.json();
+      const env = (listD.envs || []).find(e => e.key === "BLING_REFRESH_TOKEN");
+      if (env) {
+        const pR = await fetch(
+          "https://api.vercel.com/v9/projects/" + PROJ + "/env/" + env.id + "?teamId=" + TEAM,
+          {
+            method: "PATCH",
+            headers: { Authorization: "Bearer " + process.env.VERCEL_TOKEN, "Content-Type": "application/json" },
+            body: JSON.stringify({ value: refreshToken }),
+          }
+        );
+        results.push("Env var: " + (pR.ok ? "OK" : "ERRO " + pR.status));
+      }
+    } catch (e) {
+      results.push("Env var: EXCECAO " + e.message);
+    }
+  }
+
+  return results;
 }
 
 export default async function handler(req, res) {
-  const { code, state } = req.query;
+  const { code } = req.query;
   if (!code) return res.status(400).send("Parametro code ausente.");
 
   const creds = Buffer.from(
@@ -46,20 +86,22 @@ export default async function handler(req, res) {
     return res.status(500).send("Erro ao obter token: " + JSON.stringify(tokenData));
   }
 
-  const saved = await salvarTokenNoVercel(tokenData.refresh_token);
+  const results = await salvarToken(tokenData.refresh_token);
+  const allOk = results.some(r => r.includes("OK"));
 
-  const statusMsg = saved
-    ? "<p style='color:green'>Token salvo automaticamente no Vercel!</p>"
-    : "<p style='color:orange'>Nao foi possivel salvar automaticamente. Copie o token abaixo e adicione manualmente no Vercel como <b>BLING_REFRESH_TOKEN</b>:</p>";
+  const statusColor = allOk ? "green" : "orange";
+  const statusMsg = allOk
+    ? "Token salvo com sucesso!"
+    : "Salvamento parcial — verifique os detalhes abaixo.";
 
   res.setHeader("Content-Type", "text/html");
   return res.status(200).send(`
     <html><body style="font-family:sans-serif;max-width:600px;margin:40px auto;padding:20px">
       <h2>Autorizacao concluida!</h2>
-      ${statusMsg}
-      <textarea rows="3" style="width:100%;font-family:monospace;font-size:13px">${tokenData.refresh_token}</textarea>
-      <p style="margin-top:16px">
-        <b>Passos para uso manual:</b> Vercel &rarr; Settings &rarr; Environment Variables &rarr; Atualizar <code>BLING_REFRESH_TOKEN</code> &rarr; Redeploy
+      <p style="color:${statusColor};font-weight:bold">${statusMsg}</p>
+      <ul>${results.map(r => '<li>' + r + '</li>').join('')}</ul>
+      <p style="margin-top:16px;font-size:13px;color:#888">
+        Refresh token: <code style="font-size:11px">${tokenData.refresh_token}</code>
       </p>
       <p><a href="/">Voltar ao app</a></p>
     </body></html>
