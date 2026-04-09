@@ -50,13 +50,9 @@ async function getAccessToken() {
 }
 
 function extrairEndereco(det) {
-  // Bling V3: o endereco de entrega fica em transporte.etiqueta
   const etiqueta = (det.transporte && det.transporte.etiqueta) || {};
-  // Fallback: transporte.contato pode ter o endereco
   const transpContato = (det.transporte && det.transporte.contato) || {};
-  // Usa o que tiver CEP
   const dest = [etiqueta, transpContato].find(d => d && d.cep) || etiqueta || {};
-
   return {
     cep: (dest.cep || "").replace(/\D/g, ""),
     endereco: dest.endereco || "",
@@ -78,24 +74,27 @@ export default async function handler(req, res) {
   if (id) {
     const token = passedToken || await getAccessToken();
     try {
-      const r = await fetch("https://www.bling.com.br/Api/v3/pedidos/vendas/" + id, {
+      const blingRes = await fetch("https://www.bling.com.br/Api/v3/pedidos/vendas/" + id, {
         headers: { Authorization: "Bearer " + token },
       });
-      if (r.status === 401) return res.status(401).json({ erro: "Token expirado" });
-      const d = await r.json();
-      const det = d.data || {};
+      const blingStatus = blingRes.status;
+      const d = await blingRes.json();
 
-      // Debug: expoe estrutura bruta
+      // Debug: mostra resposta BRUTA completa do Bling
       if (req.query._debug) {
-        const transp = det.transporte || {};
         return res.json({
-          keys_raiz: Object.keys(det),
-          keys_transporte: Object.keys(transp),
-          etiqueta: transp.etiqueta || null,
-          contato_transporte: transp.contato || null,
+          bling_status: blingStatus,
+          bling_error: d.error || null,
+          has_data: !!d.data,
+          data_keys: d.data ? Object.keys(d.data) : [],
+          transporte_keys: (d.data && d.data.transporte) ? Object.keys(d.data.transporte) : [],
+          etiqueta: (d.data && d.data.transporte && d.data.transporte.etiqueta) || null,
+          token_prefix: (passedToken || token).substring(0, 8) + "...",
         });
       }
 
+      if (!blingRes.ok) return res.status(blingStatus).json({ erro: "Bling " + blingStatus, detail: d });
+      const det = d.data || {};
       return res.json(extrairEndereco(det));
     } catch (err) {
       return res.status(500).json({ erro: err.message });
