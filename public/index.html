@@ -8,41 +8,29 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Roboto',Arial,sans-serif;background:#f5f5f5;color:#171717;min-height:100vh}
-
-/* HEADER - só logo rosa, sem barra de menu */
 .header{background:#ffe0e8;padding:20px 24px 20px;text-align:center}
 .header-logo{display:block;margin:0 auto;height:54px;width:auto}
-
-/* CONTAINER - mais largo */
+.header-sub{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:#c0527a;margin-top:10px;letter-spacing:.3px}
 .container{max-width:1100px;margin:0 auto;padding:24px 24px 40px}
-
-/* CARD */
 .card{background:#fff;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 1px 6px rgba(0,0,0,.07)}
-
-/* CONTROLS */
 .controls{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
 .field label{display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
-.field input[type=date]{border:1.5px solid #e0e0e0;border-radius:10px;padding:10px 14px;font-size:14px;font-family:'Roboto',sans-serif;outline:none;color:#333;background:#fafafa;height:42px}
-.field input[type=date]:focus{border-color:#ff3c6f}
+.field input[type=date],.field select{border:1.5px solid #e0e0e0;border-radius:10px;padding:10px 14px;font-size:14px;font-family:'Roboto',sans-serif;outline:none;color:#333;background:#fafafa;height:42px}
+.field input[type=date]:focus,.field select:focus{border-color:#ff3c6f}
+.field select{cursor:pointer;padding-right:28px;min-width:160px}
 .btn{height:42px;padding:0 22px;border:none;border-radius:999px;font-size:13px;font-weight:700;font-family:'Montserrat',sans-serif;cursor:pointer;transition:opacity .15s;letter-spacing:.3px}
 .btn-primary{background:#ff3c6f;color:#fff}.btn-primary:hover{opacity:.88}
 .btn-secondary{background:#fff;border:2px solid #ff3c6f;color:#ff3c6f}.btn-secondary:hover{background:#fff5f7}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-
-/* STATS */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
 .stat{background:#fff5f7;border-radius:12px;padding:16px 12px;text-align:center;border:1.5px solid #ffe0e8}
 .stat-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.5px}
 .stat-value{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:700;margin-top:4px;color:#171717}
 .sv-green{color:#00a86b}.sv-orange{color:#ff7c1d}.sv-red{color:#ff3c6f}
-
-/* PROGRESS */
 .prog-wrap{margin-top:16px;display:none}
 .prog-bg{height:5px;background:#ffe0e8;border-radius:3px;overflow:hidden}
 .prog-fill{height:100%;background:#ff3c6f;border-radius:3px;transition:width .2s;width:0}
 .prog-text{font-size:12px;color:#999;margin-top:5px;font-family:'Roboto',sans-serif}
-
-/* FILTERS */
 .filters{display:flex;align-items:center;gap:8px;margin:20px 0 12px;flex-wrap:wrap}
 .fbtn{padding:7px 16px;border-radius:999px;border:2px solid #e0e0e0;font-size:12px;font-family:'Montserrat',sans-serif;font-weight:700;cursor:pointer;background:#fff;color:#888;transition:all .15s;letter-spacing:.3px}
 .fbtn.active{background:#ff3c6f;border-color:#ff3c6f;color:#fff}
@@ -50,50 +38,48 @@ body{font-family:'Roboto',Arial,sans-serif;background:#f5f5f5;color:#171717;min-
 .fbtn.a-div.active{background:#ff7c1d;border-color:#ff7c1d}
 .ebtn{margin-left:auto;padding:7px 16px;border-radius:999px;border:2px solid #ff3c6f;font-size:12px;font-family:'Montserrat',sans-serif;font-weight:700;cursor:pointer;background:#fff;color:#ff3c6f;transition:all .15s}
 .ebtn:hover{background:#fff5f7}
-
-/* TABLE */
 .table-wrap{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.07)}
 table{width:100%;border-collapse:collapse;font-size:13px}
 thead th{padding:12px 18px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #ffe0e8;background:#fff5f7}
-tbody tr{border-bottom:1px solid #fff0f4}
-tbody tr:last-child{border-bottom:none}
+tbody tr{border-bottom:1px solid #fff0f4}tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:#fffafb}
 tbody td{padding:13px 18px;vertical-align:middle}
 .badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;font-family:'Montserrat',sans-serif}
-.b-ok{background:#e6f9f2;color:#00a86b}
-.b-div{background:#fff3e6;color:#ff7c1d}
-.b-inv{background:#ffe8ee;color:#ff3c6f}
-.b-load{background:#f5f5f5;color:#bbb}
+.b-ok{background:#e6f9f2;color:#00a86b}.b-div{background:#fff3e6;color:#ff7c1d}
+.b-inv{background:#ffe8ee;color:#ff3c6f}.b-load{background:#f5f5f5;color:#bbb}
 .mono{font-family:'Courier New',monospace;font-size:12px;font-weight:600;color:#333}
-.det-text{font-size:11px;color:#aaa;font-family:'Roboto',sans-serif}
-
-/* EMPTY */
-.empty{text-align:center;padding:60px 0;color:#ddd}
+.empty{text-align:center;padding:60px 0}
 .empty-icon{font-size:48px;margin-bottom:12px}
 .empty p{font-size:14px;color:#bbb;font-family:'Roboto',sans-serif}
 .empty b{color:#ff3c6f}
 .err{background:#ffe8ee;color:#ff3c6f;border-radius:10px;padding:12px 16px;font-size:13px;margin-top:12px;border:1.5px solid #ffb3c6}
-
-/* FOOTER - só logo horizontal */
 .footer{text-align:center;padding:28px 0 32px}
 .footer-logo{height:36px;width:auto;opacity:.85}
+.footer-copy{font-family:'Roboto',sans-serif;font-size:11px;color:#bbb;margin-top:8px}
 </style>
 </head>
 <body>
 
-<!-- HEADER - só logo, sem barra de menu -->
 <div class="header">
   <img class="header-logo" src="https://cdn.awsli.com.br/1930/1930166/arquivos/logo-principal-dra--charm.png" alt="Dra. Charm">
-  <p style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:#c0527a;margin-top:10px;letter-spacing:.3px">Sistema Verificador de CEP · Pedidos</p>
+  <p class="header-sub">Sistema Verificador de CEP · Pedidos</p>
 </div>
 
 <div class="container">
-
-  <!-- BUSCA -->
   <div class="card">
     <div class="controls">
       <div class="field"><label>Data inicial</label><input type="date" id="dtI"></div>
       <div class="field"><label>Data final</label><input type="date" id="dtF"></div>
+      <div class="field">
+        <label>Situação</label>
+        <select id="selSit">
+          <option value="">Todas as situações</option>
+          <option value="em_aberto">Em aberto</option>
+          <option value="em_andamento">Em andamento</option>
+          <option value="atendido">Atendido</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+      </div>
       <button class="btn btn-primary" id="btnB">🔍 Buscar pedidos</button>
       <button class="btn btn-secondary" id="btnH">Só hoje</button>
     </div>
@@ -104,7 +90,6 @@ tbody td{padding:13px 18px;vertical-align:middle}
     </div>
   </div>
 
-  <!-- STATS + TABELA -->
   <div id="mainArea" style="display:none">
     <div class="stats">
       <div class="stat"><div class="stat-label">Total de pedidos</div><div class="stat-value" id="sTotal">0</div></div>
@@ -112,7 +97,6 @@ tbody td{padding:13px 18px;vertical-align:middle}
       <div class="stat"><div class="stat-label">Divergência</div><div class="stat-value sv-orange" id="sDiv">0</div></div>
       <div class="stat"><div class="stat-label">CEP Inválido</div><div class="stat-value sv-red" id="sInv">0</div></div>
     </div>
-
     <div class="filters">
       <button class="fbtn active" data-f="todos">Todos</button>
       <button class="fbtn a-ok" data-f="ok">✓ OK</button>
@@ -120,39 +104,26 @@ tbody td{padding:13px 18px;vertical-align:middle}
       <button class="fbtn" data-f="invalido">✗ Inválido</button>
       <button class="ebtn" id="btnEx">↓ Exportar divergências</button>
     </div>
-
     <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Pedido</th><th>Cliente</th><th>CEP</th><th>Cidade / UF</th><th>Status</th><th>Detalhe</th>
-        </tr></thead>
-        <tbody id="tb"></tbody>
-      </table>
+      <table><thead><tr>
+        <th>Pedido</th><th>Cliente</th><th>CEP</th><th>Cidade / UF</th><th>Situação</th><th>Status CEP</th><th>Detalhe</th>
+      </tr></thead><tbody id="tb"></tbody></table>
     </div>
   </div>
 
-  <!-- ESTADO INICIAL -->
   <div class="card" id="initCard">
-    <div class="empty">
-      <div class="empty-icon">📦</div>
-      <p>Selecione o período e clique em <b>Buscar pedidos</b></p>
-    </div>
+    <div class="empty"><div class="empty-icon">📦</div><p>Selecione o período e clique em <b>Buscar pedidos</b></p></div>
   </div>
 
-  <!-- FOOTER - logo horizontal + copyright -->
   <div class="footer">
     <img class="footer-logo" src="https://cdn.awsli.com.br/1930/1930166/arquivos/logo-principal-horizontal.png" alt="Dra. Charm">
-    <p style="font-family:'Roboto',sans-serif;font-size:11px;color:#bbb;margin-top:8px">© Dra Charm — Todos os direitos reservados.</p>
+    <p class="footer-copy">© Dra Charm — Todos os direitos reservados.</p>
   </div>
-
 </div>
 
 <script>
-
-
 const g = id => document.getElementById(id);
 const todayStr = () => new Date().toISOString().slice(0,10);
-
 g('dtI').value = todayStr();
 g('dtF').value = todayStr();
 g('btnH').onclick = () => { g('dtI').value = todayStr(); g('dtF').value = todayStr(); };
@@ -180,7 +151,7 @@ async function valViaCep(cep, cidadeEsp, estadoEsp) {
       let s='ok', m=null;
       const cidade = d.localidade||'', estado = d.uf||'';
       if (cidadeEsp && cidade && norm(cidade)!==norm(cidadeEsp)) {
-        s='divergencia'; m='Cidade: CEP aponta para '+cidade+'/'+estado+' mas pedido tem '+cidadeEsp;
+        s='divergencia'; m='Cidade: CEP aponta '+cidade+'/'+estado+' mas pedido tem '+cidadeEsp;
       }
       cepCache[cep]={s,m,cidade,estado};
     }
@@ -197,7 +168,6 @@ async function buscarDet(id, tentativa) {
     const url = '/api/pedidos?id='+id+(accessToken?'&token='+encodeURIComponent(accessToken):'');
     const r = await fetch(url);
     if (r.status === 429 && tentativa <= 4) {
-      // Rate limit: espera e tenta de novo com backoff exponencial
       await new Promise(res => setTimeout(res, 800 * tentativa));
       return buscarDet(id, tentativa + 1);
     }
@@ -209,9 +179,8 @@ async function buscarDet(id, tentativa) {
 async function processarLote(lista) {
   const total = lista.length;
   let done = 0;
-  g('pw').style.display='block'; g('pf').style.width='0%';
+  g('pw').style.display='block';
 
-  // Maximo 3 paralelos para respeitar rate limit da API Bling
   for (let i=0; i<lista.length; i+=3) {
     await Promise.all(lista.slice(i,i+3).map(async p => {
       const det = await buscarDet(p.id);
@@ -219,7 +188,6 @@ async function processarLote(lista) {
       const cidade = det ? (det.cidade||'') : '';
       const estado = det ? (det.estado||'') : '';
       p.cep=cep; p.cidade=cidade; p.estado=estado;
-      p.endereco=det?(det.endereco||''):'';;
 
       const loc = valLocal(cep);
       if (loc.s==='invalido') { p.cep_s=loc.s; p.cep_m=loc.m; }
@@ -251,14 +219,21 @@ const badges = {
   carregando:'<span class="badge b-load">⏳ Buscando...</span>'
 };
 
+const sitBadge = s => {
+  if (!s) return '';
+  const colors = {'Em aberto':'#e0f0ff;color:#1a7abf','Atendido':'#e6f9f2;color:#00a86b','Cancelado':'#ffe8ee;color:#ff3c6f'};
+  const style = colors[s] || '#f5f5f5;color:#888';
+  return '<span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;font-family:Montserrat,sans-serif;background:'+style+'">'+s+'</span>';
+};
+
 function renderRow(p) {
   let row = document.getElementById('r-'+p.id);
   const badge = badges[p.cep_s||'carregando']||badges.carregando;
   const cuf = p.cidade?(p.cidade+(p.estado?' / '+p.estado:'')):'— / —';
-  const det = p.cep_m?('<span style="color:#888;font-size:12px">'+p.cep_m+'</span>'):'';
+  const det = p.cep_m?('<span style="color:#aaa;font-size:11px">'+p.cep_m+'</span>'):'';
   const html = '<td>'+p.numero+'</td><td>'+(p.cliente||'')+'</td>'+
     '<td><span class="mono">'+fmtCep(p.cep)+'</span></td>'+
-    '<td>'+cuf+'</td><td>'+badge+'</td><td>'+det+'</td>';
+    '<td>'+cuf+'</td><td>'+sitBadge(p.situacao)+'</td><td>'+badge+'</td><td>'+det+'</td>';
   if (!row) { row=document.createElement('tr'); row.id='r-'+p.id; g('tb').appendChild(row); }
   row.innerHTML=html; applyFilter();
 }
@@ -291,10 +266,10 @@ g('btnEx').onclick=()=>{
   const prob=pedidos.filter(p=>p.cep_s!=='ok');
   if (!prob.length){alert('Nenhuma divergência encontrada.');return;}
   const rows=prob.map(p=>
-    [p.numero,p.cliente,p.cep,p.cidade,p.estado,p.cep_s,p.cep_m]
+    [p.numero,p.cliente,p.cep,p.cidade,p.estado,p.situacao,p.cep_s,p.cep_m]
       .map(v=>'"'+(v||'')+'"').join(',')
   );
-  const csv=['Pedido,Cliente,CEP,Cidade,UF,Status,Motivo',...rows].join('\n');
+  const csv=['Pedido,Cliente,CEP,Cidade,UF,Situação,Status,Motivo',...rows].join('\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
   a.download='divergencias_cep.csv'; a.click();
@@ -303,42 +278,43 @@ g('btnEx').onclick=()=>{
 g('btnB').onclick=async()=>{
   const dtI=g('dtI').value, dtF=g('dtF').value;
   if(!dtI||!dtF){alert('Selecione o período');return;}
+  const situacao=g('selSit').value;
+
   g('errMsg').style.display='none';
   g('btnB').disabled=true; g('btnB').textContent='Buscando...';
   g('initCard').style.display='none'; g('mainArea').style.display='block';
   g('tb').innerHTML=''; pedidos=[]; accessToken=null; updateStats();
 
   try {
-    let pag=1, fetched=0, total=null;
+    let pag=1;
     while(true){
-      const url='/api/pedidos?data_inicio='+dtI+'&data_fim='+dtF+'&pagina='+pag;
+      // FIX: nao depende de d.total (que é por pagina, nao global)
+      let url='/api/pedidos?data_inicio='+dtI+'&data_fim='+dtF+'&pagina='+pag;
+      if(situacao) url+='&situacao='+situacao;
       const r=await fetch(url); const d=await r.json();
       if(!r.ok) throw new Error(d.erro||'Erro na API ('+r.status+')');
 
-      // Guarda o access token para reutilizar nas chamadas de detalhe
       if (d._t) accessToken = d._t;
-
-      if(total===null) total=d.total;
       const lote=d.pedidos||[];
       if(!lote.length) break;
 
       lote.forEach(p=>{ p.cep_s='carregando'; p.cep=''; pedidos.push(p); renderRow(p); });
-      fetched+=lote.length; updateStats();
+      updateStats();
 
       await processarLote(lote);
-      if(lote.length<100||fetched>=total) break;
+      // hasMore=true = recebeu 100, pode ter mais paginas
+      if(!d.hasMore) break;
       pag++;
     }
+
     if(!pedidos.length) {
-      g('tb').innerHTML='<tr><td colspan="6" style="text-align:center;padding:40px;color:#bbb">Nenhum pedido no período</td></tr>';
+      g('tb').innerHTML='<tr><td colspan="7" style="text-align:center;padding:40px;color:#bbb">Nenhum pedido no período</td></tr>';
     }
   } catch(err){
     g('errMsg').textContent=err.message; g('errMsg').style.display='block';
   }
-  g('btnB').disabled=false; g('btnB').textContent='Buscar pedidos';
+  g('btnB').disabled=false; g('btnB').textContent='🔍 Buscar pedidos';
 };
-
-
 </script>
 </body>
 </html>
