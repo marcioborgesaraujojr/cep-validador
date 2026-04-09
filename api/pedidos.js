@@ -138,10 +138,13 @@ export default async function handler(req, res) {
       numero: p.numero,
       cliente: (p.contato && p.contato.nome) || "",
       telefone: (p.contato && (p.contato.telefone || p.contato.celular)) || "",
-      situacao: (p.situacao && p.situacao.valor) || "",
+      situacao: (p.situacao && (p.situacao.nome || p.situacao.valor || String(p.situacao.id || ""))) || "",
       data: p.data || "",
     }));
 
+    if (req.query._debug_sit) {
+      return res.json({ raw_sit: lista.slice(0,3).map(p => ({num: p.numero, sit: p.situacao})) });
+    }
     return res.json({
       pagina: Number(pagina),
       pedidos,
