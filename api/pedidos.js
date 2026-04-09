@@ -47,7 +47,7 @@ async function getAccessToken() {
   const d = await r.json();
   if (!d.access_token) throw new Error("Token expirado. Acesse /api/setup para reconectar o Bling.");
 
-  // CRITICO: aguarda o save antes de retornar — Vercel mata a funcao apos a resposta
+  // Salva o novo refresh token ANTES de responder (Vercel mata funcao apos resposta)
   if (d.refresh_token && d.refresh_token !== refreshToken) {
     await salvarRefreshToken(d.refresh_token);
   }
@@ -59,19 +59,23 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   if (req.method === "OPTIONS") return res.status(200).end();
 
-  // Endpoint de detalhe individual: /api/pedidos?id=123
-  if (req.query.id) {
+  const { id, token: passedToken, data_inicio, data_fim, pagina = 1 } = req.query;
+
+  // --- ENDPOINT DE DETALHE: /api/pedidos?id=X&token=ACCESS_TOKEN ---
+  if (id) {
+    // Usa o token passado pelo frontend (obtido na chamada de lista)
+    // Se nao houver token passado, busca um novo (menos eficiente)
+    const token = passedToken || await getAccessToken();
     try {
-      const token = await getAccessToken();
-      const r = await fetch("https://www.bling.com.br/Api/v3/pedidos/vendas/" + req.query.id, {
+      const r = await fetch("https://www.bling.com.br/Api/v3/pedidos/vendas/" + id, {
         headers: { Authorization: "Bearer " + token },
       });
+      if (r.status === 401) return res.status(401).json({ erro: "Token expirado" });
       const d = await r.json();
       const det = d.data || {};
       const dest = (det.transporte && det.transporte.destinatario) || {};
-      const cep = (dest.cep || "").replace(/\D/g, "");
       return res.json({
-        cep,
+        cep: (dest.cep || "").replace(/\D/g, ""),
         endereco: dest.endereco || "",
         complemento: dest.complemento || "",
         bairro: dest.bairro || "",
@@ -83,11 +87,11 @@ export default async function handler(req, res) {
     }
   }
 
-  // Endpoint de lista: /api/pedidos?data_inicio=...&data_fim=...
-  const { data_inicio, data_fim, pagina = 1 } = req.query;
+  // --- ENDPOINT DE LISTA: /api/pedidos?data_inicio=...&data_fim=... ---
   if (!data_inicio || !data_fim) return res.status(400).json({ erro: "data_inicio e data_fim obrigatorios" });
 
   try {
+    // Token obtido UMA vez aqui — frontend reutiliza para as chamadas de detalhe
     const token = await getAccessToken();
     const params = new URLSearchParams({ dataInicial: data_inicio, dataFinal: data_fim, pagina, limite: 100 });
     const r = await fetch("https://www.bling.com.br/Api/v3/pedidos/vendas?" + params, {
@@ -105,7 +109,8 @@ export default async function handler(req, res) {
       data: p.data || "",
     }));
 
-    return res.json({ total: d.total || pedidos.length, pagina: Number(pagina), pedidos });
+    // Retorna o access_token para o frontend reutilizar nas chamadas de detalhe
+    return res.json({ total: d.total || pedidos.length, pagina: Number(pagina), pedidos, _t: token });
   } catch (err) {
     return res.status(500).json({ erro: err.message });
   }
