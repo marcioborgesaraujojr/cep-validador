@@ -1,62 +1,51 @@
+const BASE = "https://cep-validador-indol.vercel.app";
+
+async function getAccessToken() {
+      const id = process.env.BLING_CLIENT_ID;
+      const secret = process.env.BLING_CLIENT_SECRET;
+      const refresh = process.env.BLING_REFRESH_TOKEN;
+      if (!refresh) throw new Error("BLING_REFRESH_TOKEN nao configurado. Visite /api/setup");
+      const creds = Buffer.from(id + ":" + secret).toString("base64");
+      const r = await fetch("https://www.bling.com.br/Api/v3/oauth/token", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded", "Authorization": "Basic " + creds },
+              body: "grant_type=refresh_token&refresh_token=" + encodeURIComponent(refresh)
+      });
+      const d = await r.json();
+      if (!d.access_token) throw new Error("Token invalido: " + JSON.stringify(d));
+      return d.access_token;
+}
+
 export default async function handler(req, res) {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-    if (req.method === "OPTIONS") return res.status(200).end();
-
-  const CHAVE = process.env.LI_APP_KEY;
-
-  if (!CHAVE) {
-        return res.status(500).json({ erro: "Variavel LI_APP_KEY nao configurada." });
-  }
-
-  const { data_inicio, data_fim, offset = 0 } = req.query;
-
-  if (!data_inicio || !data_fim) {
-        return res.status(400).json({ erro: "Parametros data_inicio e data_fim sao obrigatorios (YYYY-MM-DD)" });
-  }
-
-  const BASE = "https://api.awsli.com.br/v1";
-    const params = new URLSearchParams({
-          chave: CHAVE,
-          formato: "json",
-          limit: 200,
-          offset: offset,
-          data_criacao_gte: data_inicio + " 00:00:00",
-          data_criacao_lte: data_fim + " 23:59:59",
-    });
-
-  try {
-        const liRes = await fetch(BASE + "/pedido/?" + params.toString());
-
-      if (!liRes.ok) {
-              const text = await liRes.text();
-              return res.status(liRes.status).json({ erro: "Erro LI API: " + liRes.status, detalhe: text });
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      if (req.method === "OPTIONS") return res.status(200).end();
+      const { data_inicio, data_fim, pagina = 1 } = req.query;
+      if (!data_inicio || !data_fim) return res.status(400).json({ erro: "data_inicio e data_fim obrigatorios" });
+      try {
+              const token = await getAccessToken();
+              const params = new URLSearchParams({ dataInicial: data_inicio, dataFinal: data_fim, pagina: pagina, limite: 100 });
+              const r = await fetch("https://www.bling.com.br/Api/v3/pedidos/vendas?" + params, {
+                        headers: { "Authorization": "Bearer " + token }
+              });
+              const d = await r.json();
+              if (!r.ok) return res.status(r.status).json({ erro: "Bling API " + r.status, detalhe: d });
+              const pedidos = (d.data || []).map(function(p) {
+                        var end = (p.transporte && p.transporte.destinatario) || {};
+                        return {
+                                    numero: p.numero,
+                                    cliente: (p.contato && p.contato.nome) || "",
+                                    telefone: (p.contato && p.contato.telefone) || "",
+                                    cep: end.cep || "",
+                                    endereco: end.endereco || "",
+                                    bairro: end.bairro || "",
+                                    cidade: end.municipio || "",
+                                    estado: end.uf || "",
+                                    situacao: (p.situacao && p.situacao.valor) || "",
+                                    data: p.data || "",
+                        };
+              });
+              return res.json({ total: d.total || pedidos.length, pagina: Number(pagina), pedidos: pedidos });
+      } catch (err) {
+              return res.status(500).json({ erro: err.message });
       }
-
-      const data = await liRes.json();
-
-      const pedidos = (data.objects || []).map(function(p) {
-              return {
-                        numero: p.numero,
-                        cliente: (p.cliente && p.cliente.nome) || "—",
-                        telefone: (p.cliente && p.cliente.telefone) || "",
-                        email: (p.cliente && p.cliente.email) || "",
-                        cep: (p.envio && p.envio.endereco && p.envio.endereco.cep) || "",
-                        endereco: (p.envio && p.envio.endereco && p.envio.endereco.endereco) || "",
-                        bairro: (p.envio && p.envio.endereco && p.envio.endereco.bairro) || "",
-                        cidade: (p.envio && p.envio.endereco && p.envio.endereco.cidade) || "",
-                        estado: (p.envio && p.envio.endereco && p.envio.endereco.estado) || "",
-                        situacao: (p.situacao && p.situacao.label) || "",
-                        data_criacao: p.data_criacao || "",
-              };
-      });
-
-      return res.json({
-              total: (data.meta && data.meta.total_count) || pedidos.length,
-              offset: Number(offset),
-              pedidos: pedidos,
-      });
-  } catch (err) {
-        return res.status(500).json({ erro: "Falha ao conectar com a LI API", detalhe: err.message });
-  }
 }
