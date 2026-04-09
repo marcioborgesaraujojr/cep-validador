@@ -132,10 +132,16 @@ async function valViaCep(cep, cidadeEsp, estadoEsp) {
   }
 }
 
-async function buscarDet(id) {
+async function buscarDet(id, tentativa) {
+  tentativa = tentativa || 1;
   try {
     const url = '/api/pedidos?id='+id+(accessToken?'&token='+encodeURIComponent(accessToken):'');
     const r = await fetch(url);
+    if (r.status === 429 && tentativa <= 4) {
+      // Rate limit: espera e tenta de novo com backoff exponencial
+      await new Promise(res => setTimeout(res, 800 * tentativa));
+      return buscarDet(id, tentativa + 1);
+    }
     if (!r.ok) return null;
     return await r.json();
   } catch(_) { return null; }
@@ -146,8 +152,9 @@ async function processarLote(lista) {
   let done = 0;
   g('pw').style.display='block'; g('pf').style.width='0%';
 
-  for (let i=0; i<lista.length; i+=10) {
-    await Promise.all(lista.slice(i,i+10).map(async p => {
+  // Maximo 3 paralelos para respeitar rate limit da API Bling
+  for (let i=0; i<lista.length; i+=3) {
+    await Promise.all(lista.slice(i,i+3).map(async p => {
       const det = await buscarDet(p.id);
       const cep = det ? (det.cep||'') : '';
       const cidade = det ? (det.cidade||'') : '';
