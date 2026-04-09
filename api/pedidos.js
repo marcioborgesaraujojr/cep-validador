@@ -138,7 +138,7 @@ export default async function handler(req, res) {
       numero: p.numero,
       cliente: (p.contato && p.contato.nome) || "",
       telefone: (p.contato && (p.contato.telefone || p.contato.celular)) || "",
-      situacao: (p.situacao && (p.situacao.nome || p.situacao.valor || String(p.situacao.id || ""))) || "",
+      situacao_id: (p.situacao && p.situacao.id) || null,
       data: p.data || "",
     }));
 
