@@ -33,26 +33,42 @@ async function salvarRefreshToken(novoToken) {
 async function getAccessToken() {
   const refreshToken = process.env.BLING_REFRESH_TOKEN;
   if (!refreshToken) throw new Error("BLING_REFRESH_TOKEN nao configurado. Acesse /api/setup.");
-
   const creds = Buffer.from(
     process.env.BLING_CLIENT_ID + ":" + process.env.BLING_CLIENT_SECRET
   ).toString("base64");
-
   const r = await fetch("https://www.bling.com.br/Api/v3/oauth/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded", Authorization: "Basic " + creds },
     body: "grant_type=refresh_token&refresh_token=" + encodeURIComponent(refreshToken),
   });
-
   const d = await r.json();
   if (!d.access_token) throw new Error("Token expirado. Acesse /api/setup para reconectar o Bling.");
-
-  // Salva o novo refresh token ANTES de responder (Vercel mata funcao apos resposta)
   if (d.refresh_token && d.refresh_token !== refreshToken) {
     await salvarRefreshToken(d.refresh_token);
   }
-
   return d.access_token;
+}
+
+function extrairEndereco(det) {
+  // Bling V3: tenta multiplos caminhos para o endereco de entrega
+  const caminhos = [
+    det && det.transporte && det.transporte.dadosEtiqueta,
+    det && det.transporte && det.transporte.destinatario,
+    det && det.enderecoEntrega,
+    det && det.nota && det.nota.contato,
+  ].filter(Boolean);
+
+  // Usa o primeiro que tiver CEP preenchido
+  const dest = caminhos.find(d => d && d.cep) || caminhos[0] || {};
+
+  return {
+    cep: (dest.cep || "").replace(/\D/g, ""),
+    endereco: dest.endereco || dest.logradouro || "",
+    complemento: dest.complemento || "",
+    bairro: dest.bairro || "",
+    cidade: dest.municipio || dest.cidade || "",
+    estado: dest.uf || "",
+  };
 }
 
 export default async function handler(req, res) {
@@ -61,10 +77,8 @@ export default async function handler(req, res) {
 
   const { id, token: passedToken, data_inicio, data_fim, pagina = 1 } = req.query;
 
-  // --- ENDPOINT DE DETALHE: /api/pedidos?id=X&token=ACCESS_TOKEN ---
+  // --- ENDPOINT DE DETALHE ---
   if (id) {
-    // Usa o token passado pelo frontend (obtido na chamada de lista)
-    // Se nao houver token passado, busca um novo (menos eficiente)
     const token = passedToken || await getAccessToken();
     try {
       const r = await fetch("https://www.bling.com.br/Api/v3/pedidos/vendas/" + id, {
@@ -73,25 +87,29 @@ export default async function handler(req, res) {
       if (r.status === 401) return res.status(401).json({ erro: "Token expirado" });
       const d = await r.json();
       const det = d.data || {};
-      const dest = (det.transporte && det.transporte.destinatario) || {};
-      return res.json({
-        cep: (dest.cep || "").replace(/\D/g, ""),
-        endereco: dest.endereco || "",
-        complemento: dest.complemento || "",
-        bairro: dest.bairro || "",
-        cidade: dest.municipio || "",
-        estado: dest.uf || "",
-      });
+
+      // Modo debug: retorna estrutura bruta para diagnostico
+      if (req.query._debug) {
+        const transp = det.transporte || {};
+        return res.json({
+          keys_raiz: Object.keys(det).slice(0, 20),
+          keys_transporte: Object.keys(transp).slice(0, 20),
+          dadosEtiqueta: transp.dadosEtiqueta || null,
+          destinatario: transp.destinatario || null,
+          enderecoEntrega: det.enderecoEntrega || null,
+        });
+      }
+
+      return res.json(extrairEndereco(det));
     } catch (err) {
       return res.status(500).json({ erro: err.message });
     }
   }
 
-  // --- ENDPOINT DE LISTA: /api/pedidos?data_inicio=...&data_fim=... ---
+  // --- ENDPOINT DE LISTA ---
   if (!data_inicio || !data_fim) return res.status(400).json({ erro: "data_inicio e data_fim obrigatorios" });
 
   try {
-    // Token obtido UMA vez aqui — frontend reutiliza para as chamadas de detalhe
     const token = await getAccessToken();
     const params = new URLSearchParams({ dataInicial: data_inicio, dataFinal: data_fim, pagina, limite: 100 });
     const r = await fetch("https://www.bling.com.br/Api/v3/pedidos/vendas?" + params, {
@@ -109,7 +127,6 @@ export default async function handler(req, res) {
       data: p.data || "",
     }));
 
-    // Retorna o access_token para o frontend reutilizar nas chamadas de detalhe
     return res.json({ total: d.total || pedidos.length, pagina: Number(pagina), pedidos, _t: token });
   } catch (err) {
     return res.status(500).json({ erro: err.message });
