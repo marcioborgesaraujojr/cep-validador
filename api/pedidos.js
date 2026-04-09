@@ -81,7 +81,7 @@ export default async function handler(req, res) {
 
   const { id, token: passedToken, data_inicio, data_fim, pagina = 1 } = req.query;
 
-  // --- DETALHE ---
+  // --- ENDPOINT DE DETALHE ---
   if (id) {
     const token = passedToken || await getAccessToken();
     try {
@@ -91,7 +91,13 @@ export default async function handler(req, res) {
       const d = await blingRes.json();
       if (req.query._debug) {
         const transp = (d.data || {}).transporte || {};
-        return res.json({ status: blingRes.status, has_data: !!d.data, etiqueta: transp.etiqueta || null, ec_ok: !!parseEC() });
+        return res.json({
+          status: blingRes.status, has_data: !!d.data,
+          data_keys: d.data ? Object.keys(d.data) : [],
+          transporte_keys: Object.keys(transp),
+          etiqueta: transp.etiqueta || null,
+          ec_ok: !!parseEC(),
+        });
       }
       if (!blingRes.ok) return res.status(blingRes.status).json({ erro: "Bling " + blingRes.status });
       return res.json(extrairEndereco(d.data || {}));
@@ -100,20 +106,24 @@ export default async function handler(req, res) {
     }
   }
 
-  // --- LISTA ---
+  // --- ENDPOINT DE LISTA ---
   if (!data_inicio || !data_fim) return res.status(400).json({ erro: "data_inicio e data_fim obrigatorios" });
 
   try {
     const token = await getAccessToken();
-
-    // Aceita idSituacao numerico direto (dropdown dinamico) ou slug (compat)
-    const slugMap = { em_aberto: 6, atendido: 9, cancelado: 12, em_andamento: 15 };
-    const idSitNum = req.query.idSituacao ? Number(req.query.idSituacao) : null;
-    const idSitSlug = req.query.situacao ? (slugMap[req.query.situacao] || null) : null;
-    const idSituacao = idSitNum || idSitSlug || null;
-
     const paramsObj = { dataInicial: data_inicio, dataFinal: data_fim, pagina, limite: 100 };
-    if (idSituacao) paramsObj.idSituacao = idSituacao;
+
+    // Aceita situacao_id (ID numerico real do Bling, vindo do endpoint /api/situacoes)
+    // Aceita tambem situacao (nome curto legado) para compatibilidade
+    const situacaoId = req.query.situacao_id;
+    const situacaoNome = req.query.situacao;
+    const SITUACOES_LEGADO = { em_aberto: 6, atendido: 9, cancelado: 12, em_andamento: 15 };
+
+    if (situacaoId) {
+      paramsObj.idSituacao = situacaoId; // ID real do Bling
+    } else if (situacaoNome && SITUACOES_LEGADO[situacaoNome]) {
+      paramsObj.idSituacao = SITUACOES_LEGADO[situacaoNome];
+    }
 
     const params = new URLSearchParams(paramsObj);
     const r = await fetch("https://www.bling.com.br/Api/v3/pedidos/vendas?" + params, {
@@ -132,9 +142,12 @@ export default async function handler(req, res) {
       data: p.data || "",
     }));
 
-    // d.total do Bling = contagem da pagina, nao total global
-    // hasMore=true enquanto receber 100 registros
-    return res.json({ pagina: Number(pagina), pedidos, hasMore: lista.length === 100, _t: token });
+    return res.json({
+      pagina: Number(pagina),
+      pedidos,
+      hasMore: lista.length === 100,
+      _t: token,
+    });
   } catch (err) {
     return res.status(500).json({ erro: err.message });
   }
