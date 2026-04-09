@@ -50,23 +50,20 @@ async function getAccessToken() {
 }
 
 function extrairEndereco(det) {
-  // Bling V3: tenta multiplos caminhos para o endereco de entrega
-  const caminhos = [
-    det && det.transporte && det.transporte.dadosEtiqueta,
-    det && det.transporte && det.transporte.destinatario,
-    det && det.enderecoEntrega,
-    det && det.nota && det.nota.contato,
-  ].filter(Boolean);
-
-  // Usa o primeiro que tiver CEP preenchido
-  const dest = caminhos.find(d => d && d.cep) || caminhos[0] || {};
+  // Bling V3: o endereco de entrega fica em transporte.etiqueta
+  const etiqueta = (det.transporte && det.transporte.etiqueta) || {};
+  // Fallback: transporte.contato pode ter o endereco
+  const transpContato = (det.transporte && det.transporte.contato) || {};
+  // Usa o que tiver CEP
+  const dest = [etiqueta, transpContato].find(d => d && d.cep) || etiqueta || {};
 
   return {
     cep: (dest.cep || "").replace(/\D/g, ""),
-    endereco: dest.endereco || dest.logradouro || "",
+    endereco: dest.endereco || "",
+    numero: dest.numero || "",
     complemento: dest.complemento || "",
     bairro: dest.bairro || "",
-    cidade: dest.municipio || dest.cidade || "",
+    cidade: dest.municipio || "",
     estado: dest.uf || "",
   };
 }
@@ -88,15 +85,14 @@ export default async function handler(req, res) {
       const d = await r.json();
       const det = d.data || {};
 
-      // Modo debug: retorna estrutura bruta para diagnostico
+      // Debug: expoe estrutura bruta
       if (req.query._debug) {
         const transp = det.transporte || {};
         return res.json({
-          keys_raiz: Object.keys(det).slice(0, 20),
-          keys_transporte: Object.keys(transp).slice(0, 20),
-          dadosEtiqueta: transp.dadosEtiqueta || null,
-          destinatario: transp.destinatario || null,
-          enderecoEntrega: det.enderecoEntrega || null,
+          keys_raiz: Object.keys(det),
+          keys_transporte: Object.keys(transp),
+          etiqueta: transp.etiqueta || null,
+          contato_transporte: transp.contato || null,
         });
       }
 
