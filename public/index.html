@@ -17,16 +17,16 @@ body{font-family:'Roboto',Arial,sans-serif;background:#f5f5f5;color:#171717;min-
 .field label{display:block;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
 .field input[type=date],.field select{border:1.5px solid #e0e0e0;border-radius:10px;padding:10px 14px;font-size:14px;font-family:'Roboto',sans-serif;outline:none;color:#333;background:#fafafa;height:42px}
 .field input[type=date]:focus,.field select:focus{border-color:#ff3c6f}
-.field select{cursor:pointer;padding-right:28px;min-width:160px}
+.field select{cursor:pointer;min-width:200px}
 .btn{height:42px;padding:0 22px;border:none;border-radius:999px;font-size:13px;font-weight:700;font-family:'Montserrat',sans-serif;cursor:pointer;transition:opacity .15s;letter-spacing:.3px}
 .btn-primary{background:#ff3c6f;color:#fff}.btn-primary:hover{opacity:.88}
 .btn-secondary{background:#fff;border:2px solid #ff3c6f;color:#ff3c6f}.btn-secondary:hover{background:#fff5f7}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px}
 .stat{background:#fff5f7;border-radius:12px;padding:16px 12px;text-align:center;border:1.5px solid #ffe0e8}
 .stat-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.5px}
-.stat-value{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:700;margin-top:4px;color:#171717}
-.sv-green{color:#00a86b}.sv-orange{color:#ff7c1d}.sv-red{color:#ff3c6f}
+.stat-value{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:700;margin-top:4px;color:#171717}
+.sv-green{color:#00a86b}.sv-orange{color:#ff7c1d}.sv-amber{color:#f59e0b}.sv-red{color:#ff3c6f}
 .prog-wrap{margin-top:16px;display:none}
 .prog-bg{height:5px;background:#ffe0e8;border-radius:3px;overflow:hidden}
 .prog-fill{height:100%;background:#ff3c6f;border-radius:3px;transition:width .2s;width:0}
@@ -36,18 +36,23 @@ body{font-family:'Roboto',Arial,sans-serif;background:#f5f5f5;color:#171717;min-
 .fbtn.active{background:#ff3c6f;border-color:#ff3c6f;color:#fff}
 .fbtn.a-ok.active{background:#00a86b;border-color:#00a86b}
 .fbtn.a-div.active{background:#ff7c1d;border-color:#ff7c1d}
+.fbtn.a-rua.active{background:#f59e0b;border-color:#f59e0b}
 .ebtn{margin-left:auto;padding:7px 16px;border-radius:999px;border:2px solid #ff3c6f;font-size:12px;font-family:'Montserrat',sans-serif;font-weight:700;cursor:pointer;background:#fff;color:#ff3c6f;transition:all .15s}
 .ebtn:hover{background:#fff5f7}
 .table-wrap{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.07)}
 table{width:100%;border-collapse:collapse;font-size:13px}
-thead th{padding:12px 18px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #ffe0e8;background:#fff5f7}
+thead th{padding:12px 14px;text-align:left;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #ffe0e8;background:#fff5f7}
 tbody tr{border-bottom:1px solid #fff0f4}tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:#fffafb}
-tbody td{padding:13px 18px;vertical-align:middle}
-.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;font-family:'Montserrat',sans-serif}
-.b-ok{background:#e6f9f2;color:#00a86b}.b-div{background:#fff3e6;color:#ff7c1d}
-.b-inv{background:#ffe8ee;color:#ff3c6f}.b-load{background:#f5f5f5;color:#bbb}
+tbody td{padding:11px 14px;vertical-align:middle}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 11px;border-radius:999px;font-size:11px;font-weight:700;font-family:'Montserrat',sans-serif}
+.b-ok{background:#e6f9f2;color:#00a86b}
+.b-div{background:#fff3e6;color:#ff7c1d}
+.b-rua{background:#fef3c7;color:#92400e}
+.b-inv{background:#ffe8ee;color:#ff3c6f}
+.b-load{background:#f5f5f5;color:#bbb}
 .mono{font-family:'Courier New',monospace;font-size:12px;font-weight:600;color:#333}
+.det-msg{font-size:11px;color:#888;font-family:'Roboto',sans-serif;margin-top:2px}
 .empty{text-align:center;padding:60px 0}
 .empty-icon{font-size:48px;margin-bottom:12px}
 .empty p{font-size:14px;color:#bbb;font-family:'Roboto',sans-serif}
@@ -74,10 +79,6 @@ tbody td{padding:13px 18px;vertical-align:middle}
         <label>Situação</label>
         <select id="selSit">
           <option value="">Todas as situações</option>
-          <option value="em_aberto">Em aberto</option>
-          <option value="em_andamento">Em andamento</option>
-          <option value="atendido">Atendido</option>
-          <option value="cancelado">Cancelado</option>
         </select>
       </div>
       <button class="btn btn-primary" id="btnB">🔍 Buscar pedidos</button>
@@ -92,17 +93,19 @@ tbody td{padding:13px 18px;vertical-align:middle}
 
   <div id="mainArea" style="display:none">
     <div class="stats">
-      <div class="stat"><div class="stat-label">Total de pedidos</div><div class="stat-value" id="sTotal">0</div></div>
+      <div class="stat"><div class="stat-label">Total</div><div class="stat-value" id="sTotal">0</div></div>
       <div class="stat"><div class="stat-label">CEP OK</div><div class="stat-value sv-green" id="sOk">0</div></div>
       <div class="stat"><div class="stat-label">Divergência</div><div class="stat-value sv-orange" id="sDiv">0</div></div>
+      <div class="stat"><div class="stat-label">Atenção rua</div><div class="stat-value sv-amber" id="sRua">0</div></div>
       <div class="stat"><div class="stat-label">CEP Inválido</div><div class="stat-value sv-red" id="sInv">0</div></div>
     </div>
     <div class="filters">
       <button class="fbtn active" data-f="todos">Todos</button>
       <button class="fbtn a-ok" data-f="ok">✓ OK</button>
-      <button class="fbtn a-div" data-f="divergencia">⚠ Divergência</button>
+      <button class="fbtn a-div" data-f="divergencia">⚠ Divergência cidade</button>
+      <button class="fbtn a-rua" data-f="atencao_rua">⚡ Atenção rua</button>
       <button class="fbtn" data-f="invalido">✗ Inválido</button>
-      <button class="ebtn" id="btnEx">↓ Exportar divergências</button>
+      <button class="ebtn" id="btnEx">↓ Exportar problemas</button>
     </div>
     <div class="table-wrap">
       <table><thead><tr>
@@ -128,36 +131,72 @@ g('dtI').value = todayStr();
 g('dtF').value = todayStr();
 g('btnH').onclick = () => { g('dtI').value = todayStr(); g('dtF').value = todayStr(); };
 
+// Carrega situacoes dinamicamente do Bling via /api/situacoes
+async function carregarSituacoes() {
+  try {
+    const r = await fetch('/api/situacoes');
+    const d = await r.json();
+    const sel = g('selSit');
+    (d.situacoes || []).forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.id;
+      opt.textContent = s.nome;
+      sel.appendChild(opt);
+    });
+  } catch(_) { /* usa fallback vazio */ }
+}
+carregarSituacoes();
+
 let pedidos = [], filter = 'todos', accessToken = null;
 const cepCache = {};
 
 function norm(s) {
-  return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+  return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'').trim();
+}
+
+// Similaridade simples: % de palavras em comum
+function simWords(a, b) {
+  const wa = norm(a).split(/\s+/).filter(Boolean);
+  const wb = norm(b).split(/\s+/).filter(Boolean);
+  if (!wa.length || !wb.length) return 0;
+  const common = wa.filter(w => wb.includes(w)).length;
+  return common / Math.max(wa.length, wb.length);
 }
 
 function valLocal(cep) {
-  if (!cep || cep.length !== 8) return { s:'invalido', m:'CEP ausente ou incompleto' };
-  if (/^0+$/.test(cep) || /^(\d)\1{7}$/.test(cep)) return { s:'invalido', m:'CEP inválido (sequência repetida)' };
+  if (!cep || cep.length !== 8) return { s:'invalido', m:'CEP ausente ou com dígitos incompletos' };
+  if (/^0+$/.test(cep) || /^(\d)\1{7}$/.test(cep)) return { s:'invalido', m:'CEP inválido (sequência inválida)' };
   return { s:'ok', m:null };
 }
 
-async function valViaCep(cep, cidadeEsp, estadoEsp) {
+async function valViaCep(cep, cidadeEsp, estadoEsp, ruaEsp) {
   if (cepCache[cep]) return cepCache[cep];
   try {
     const r = await fetch('https://viacep.com.br/ws/'+cep+'/json/');
     const d = await r.json();
-    if (d.erro) { cepCache[cep]={s:'invalido',m:'CEP não encontrado',cidade:'',estado:''}; }
-    else {
+    if (d.erro) {
+      cepCache[cep]={ s:'invalido', m:'CEP não existe na base dos Correios', cidade:'', estado:'', rua:'' };
+    } else {
+      const cidadeVC = d.localidade||'', estadoVC = d.uf||'', ruaVC = d.logradouro||'';
       let s='ok', m=null;
-      const cidade = d.localidade||'', estado = d.uf||'';
-      if (cidadeEsp && cidade && norm(cidade)!==norm(cidadeEsp)) {
-        s='divergencia'; m='Cidade: CEP aponta '+cidade+'/'+estado+' mas pedido tem '+cidadeEsp;
+
+      // 1. Valida cidade
+      if (cidadeEsp && cidadeVC && norm(cidadeVC) !== norm(cidadeEsp)) {
+        s='divergencia';
+        m='Cidade divergente: CEP aponta '+cidadeVC+'/'+estadoVC+' mas pedido tem '+cidadeEsp+(estadoEsp?'/'+estadoEsp:'');
       }
-      cepCache[cep]={s,m,cidade,estado};
+
+      // 2. Valida rua (só se cidade OK e rua preenchida nos dois lados)
+      if (s==='ok' && ruaEsp && ruaVC && simWords(ruaVC, ruaEsp) < 0.4) {
+        s='atencao_rua';
+        m='Rua divergente: CEP aponta "'+ruaVC+'" mas pedido tem "'+ruaEsp+'"';
+      }
+
+      cepCache[cep]={ s, m:m||'', cidade:cidadeVC, estado:estadoVC, rua:ruaVC };
     }
     return cepCache[cep];
   } catch(_) {
-    cepCache[cep]={s:'invalido',m:'Erro ao consultar ViaCEP',cidade:'',estado:''};
+    cepCache[cep]={ s:'invalido', m:'Erro ao consultar ViaCEP (sem conexão)', cidade:'', estado:'', rua:'' };
     return cepCache[cep];
   }
 }
@@ -177,7 +216,6 @@ async function buscarDet(id, tentativa) {
 }
 
 async function processarLote(lista) {
-  const total = lista.length;
   let done = 0;
   g('pw').style.display='block';
 
@@ -187,20 +225,21 @@ async function processarLote(lista) {
       const cep = det ? (det.cep||'') : '';
       const cidade = det ? (det.cidade||'') : '';
       const estado = det ? (det.estado||'') : '';
-      p.cep=cep; p.cidade=cidade; p.estado=estado;
+      const rua = det ? (det.endereco||'') : '';
+      p.cep=cep; p.cidade=cidade; p.estado=estado; p.rua=rua;
 
       const loc = valLocal(cep);
       if (loc.s==='invalido') { p.cep_s=loc.s; p.cep_m=loc.m; }
       else {
-        const vc = await valViaCep(cep, cidade, estado);
+        const vc = await valViaCep(cep, cidade, estado, rua);
         p.cep_s=vc.s; p.cep_m=vc.m||'';
         if (vc.cidade&&!cidade) { p.cidade=vc.cidade; p.estado=vc.estado; }
       }
 
       done++;
-      const pct = Math.round((done/total)*100);
+      const pct = Math.round((done/lista.length)*100);
       g('pf').style.width=pct+'%';
-      g('pt').textContent='Detalhes: '+done+' / '+total;
+      g('pt').textContent='Detalhes: '+done+' / '+lista.length;
       renderRow(p); updateStats();
     }));
   }
@@ -213,37 +252,40 @@ function fmtCep(c) {
 }
 
 const badges = {
-  ok:'<span class="badge b-ok">✓ OK</span>',
-  divergencia:'<span class="badge b-div">⚠ Divergência</span>',
-  invalido:'<span class="badge b-inv">✗ Inválido</span>',
-  carregando:'<span class="badge b-load">⏳ Buscando...</span>'
+  ok:         '<span class="badge b-ok">✓ CEP válido</span>',
+  divergencia:'<span class="badge b-div">⚠ Cidade divergente</span>',
+  atencao_rua:'<span class="badge b-rua">⚡ Atenção: rua</span>',
+  invalido:   '<span class="badge b-inv">✗ CEP inválido</span>',
+  carregando: '<span class="badge b-load">⏳ Verificando...</span>'
 };
 
 const sitBadge = s => {
   if (!s) return '';
-  const colors = {'Em aberto':'#e0f0ff;color:#1a7abf','Atendido':'#e6f9f2;color:#00a86b','Cancelado':'#ffe8ee;color:#ff3c6f'};
-  const style = colors[s] || '#f5f5f5;color:#888';
-  return '<span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;font-family:Montserrat,sans-serif;background:'+style+'">'+s+'</span>';
+  return '<span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;font-family:Montserrat,sans-serif;background:#f0f0f0;color:#555">'+s+'</span>';
 };
 
 function renderRow(p) {
   let row = document.getElementById('r-'+p.id);
   const badge = badges[p.cep_s||'carregando']||badges.carregando;
   const cuf = p.cidade?(p.cidade+(p.estado?' / '+p.estado:'')):'— / —';
-  const det = p.cep_m?('<span style="color:#aaa;font-size:11px">'+p.cep_m+'</span>'):'';
-  const html = '<td>'+p.numero+'</td><td>'+(p.cliente||'')+'</td>'+
+  const det = p.cep_m?('<div class="det-msg">'+p.cep_m+'</div>'):'';
+  const html = '<td>'+p.numero+'</td><td style="max-width:200px">'+escHtml(p.cliente||'')+'</td>'+
     '<td><span class="mono">'+fmtCep(p.cep)+'</span></td>'+
-    '<td>'+cuf+'</td><td>'+sitBadge(p.situacao)+'</td><td>'+badge+'</td><td>'+det+'</td>';
+    '<td>'+escHtml(cuf)+'</td><td>'+sitBadge(p.situacao)+'</td><td>'+badge+det+'</td><td></td>';
   if (!row) { row=document.createElement('tr'); row.id='r-'+p.id; g('tb').appendChild(row); }
   row.innerHTML=html; applyFilter();
 }
 
+function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
 function updateStats() {
-  const ok=pedidos.filter(p=>p.cep_s==='ok').length;
-  const dv=pedidos.filter(p=>p.cep_s==='divergencia').length;
-  const inv=pedidos.filter(p=>p.cep_s==='invalido').length;
+  const ok  = pedidos.filter(p=>p.cep_s==='ok').length;
+  const dv  = pedidos.filter(p=>p.cep_s==='divergencia').length;
+  const rua = pedidos.filter(p=>p.cep_s==='atencao_rua').length;
+  const inv = pedidos.filter(p=>p.cep_s==='invalido').length;
   g('sTotal').textContent=pedidos.length;
-  g('sOk').textContent=ok; g('sDiv').textContent=dv; g('sInv').textContent=inv;
+  g('sOk').textContent=ok; g('sDiv').textContent=dv;
+  g('sRua').textContent=rua; g('sInv').textContent=inv;
 }
 
 function applyFilter() {
@@ -263,22 +305,22 @@ document.querySelectorAll('.fbtn').forEach(b => {
 });
 
 g('btnEx').onclick=()=>{
-  const prob=pedidos.filter(p=>p.cep_s!=='ok');
-  if (!prob.length){alert('Nenhuma divergência encontrada.');return;}
+  const prob=pedidos.filter(p=>p.cep_s!=='ok'&&p.cep_s!=='carregando');
+  if (!prob.length){alert('Nenhum problema encontrado.');return;}
   const rows=prob.map(p=>
-    [p.numero,p.cliente,p.cep,p.cidade,p.estado,p.situacao,p.cep_s,p.cep_m]
-      .map(v=>'"'+(v||'')+'"').join(',')
+    [p.numero,p.cliente,p.cep,p.cidade,p.estado,p.rua,p.situacao,p.cep_s,p.cep_m]
+      .map(v=>'"'+(v||'').replace(/"/g,'""')+'"').join(',')
   );
-  const csv=['Pedido,Cliente,CEP,Cidade,UF,Situação,Status,Motivo',...rows].join('\n');
+  const csv=['Pedido,Cliente,CEP,Cidade,UF,Rua,Situação,Status,Mensagem',...rows].join('\n');
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-  a.download='divergencias_cep.csv'; a.click();
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='problemas_cep.csv'; a.click();
 };
 
 g('btnB').onclick=async()=>{
   const dtI=g('dtI').value, dtF=g('dtF').value;
   if(!dtI||!dtF){alert('Selecione o período');return;}
-  const situacao=g('selSit').value;
+  const sitVal=g('selSit').value;
 
   g('errMsg').style.display='none';
   g('btnB').disabled=true; g('btnB').textContent='Buscando...';
@@ -288,9 +330,9 @@ g('btnB').onclick=async()=>{
   try {
     let pag=1;
     while(true){
-      // FIX: nao depende de d.total (que é por pagina, nao global)
       let url='/api/pedidos?data_inicio='+dtI+'&data_fim='+dtF+'&pagina='+pag;
-      if(situacao) url+='&situacao='+situacao;
+      // sitVal pode ser o ID numerico (da API situacoes) ou slug (em_aberto etc)
+      if(sitVal) url+='&idSituacao='+sitVal;
       const r=await fetch(url); const d=await r.json();
       if(!r.ok) throw new Error(d.erro||'Erro na API ('+r.status+')');
 
@@ -300,15 +342,13 @@ g('btnB').onclick=async()=>{
 
       lote.forEach(p=>{ p.cep_s='carregando'; p.cep=''; pedidos.push(p); renderRow(p); });
       updateStats();
-
       await processarLote(lote);
-      // hasMore=true = recebeu 100, pode ter mais paginas
       if(!d.hasMore) break;
       pag++;
     }
 
     if(!pedidos.length) {
-      g('tb').innerHTML='<tr><td colspan="7" style="text-align:center;padding:40px;color:#bbb">Nenhum pedido no período</td></tr>';
+      g('tb').innerHTML='<tr><td colspan="7" style="text-align:center;padding:40px;color:#bbb">Nenhum pedido encontrado no período</td></tr>';
     }
   } catch(err){
     g('errMsg').textContent=err.message; g('errMsg').style.display='block';
