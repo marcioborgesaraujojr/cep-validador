@@ -8,9 +8,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f3f0;color:#222;min-height:100vh}
 header{padding:14px 24px;border-bottom:1px solid #e8e0d8;background:#fff;display:flex;align-items:center;gap:8px}
-header .brand{font-weight:700;color:#a0446a;font-size:15px}
-header .sep{color:#ccc}
-header .title{font-size:14px;color:#888}
+.brand{font-weight:700;color:#a0446a;font-size:15px}.sep{color:#ccc}.htitle{font-size:14px;color:#888}
 .container{max-width:1100px;margin:0 auto;padding:24px 16px}
 .card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
 .controls{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
@@ -25,337 +23,253 @@ header .title{font-size:14px;color:#888}
 .stat{background:#fff;border-radius:10px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .stat-label{font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.4px}
 .stat-value{font-size:28px;font-weight:700;margin-top:4px}
-.stat-value.green{color:#16a34a}.stat-value.orange{color:#ea580c}.stat-value.red{color:#dc2626}
-.progress-wrap{margin-top:20px;display:none}
-.progress-bar-bg{height:6px;background:#eee;border-radius:3px;overflow:hidden}
-.progress-bar-fill{height:100%;background:#a0446a;border-radius:3px;transition:width .3s;width:0}
-.progress-text{font-size:12px;color:#888;margin-top:6px}
+.sv-green{color:#16a34a}.sv-orange{color:#ea580c}.sv-red{color:#dc2626}
+.prog-wrap{margin-top:20px;display:none}
+.prog-bg{height:6px;background:#eee;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:#a0446a;border-radius:3px;transition:width .2s;width:0}
+.prog-text{font-size:12px;color:#888;margin-top:6px}
 .filters{display:flex;align-items:center;gap:8px;margin:20px 0 12px;flex-wrap:wrap}
-.filter-btn{padding:6px 14px;border-radius:20px;border:1.5px solid #ddd;font-size:13px;cursor:pointer;background:#fff;color:#555;font-weight:500;transition:all .15s}
-.filter-btn.active{background:#a0446a;border-color:#a0446a;color:#fff}
-.export-btn{margin-left:auto;padding:6px 14px;border-radius:8px;border:1.5px solid #ddd;font-size:13px;cursor:pointer;background:#fff;color:#555;font-weight:500}
-.export-btn:hover{background:#f0f0f0}
+.fbtn{padding:6px 14px;border-radius:20px;border:1.5px solid #ddd;font-size:13px;cursor:pointer;background:#fff;color:#555;font-weight:500;transition:all .15s}
+.fbtn.active{background:#a0446a;border-color:#a0446a;color:#fff}
+.ebtn{margin-left:auto;padding:6px 14px;border-radius:8px;border:1.5px solid #ddd;font-size:13px;cursor:pointer;background:#fff;color:#555;font-weight:500}
+.ebtn:hover{background:#f0f0f0}
 table{width:100%;border-collapse:collapse;font-size:13px}
 thead th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #eee}
-tbody tr{border-bottom:1px solid #f5f5f5}
-tbody tr:last-child{border-bottom:none}
+tbody tr{border-bottom:1px solid #f5f5f5}tbody tr:last-child{border-bottom:none}
 tbody td{padding:12px 14px;vertical-align:middle}
 .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
-.badge-ok{background:#dcfce7;color:#16a34a}
-.badge-div{background:#fff7ed;color:#ea580c}
-.badge-inv{background:#fee2e2;color:#dc2626}
-.badge-load{background:#f5f5f5;color:#aaa}
-.cep-mono{font-family:monospace;font-size:13px}
+.b-ok{background:#dcfce7;color:#16a34a}.b-div{background:#fff7ed;color:#ea580c}
+.b-inv{background:#fee2e2;color:#dc2626}.b-load{background:#f5f5f5;color:#aaa}
+.mono{font-family:monospace;font-size:13px}
 .empty{text-align:center;padding:60px 0;color:#bbb}
 .empty-icon{font-size:40px;margin-bottom:12px}
-.empty p{font-size:14px}
-.error-msg{background:#fee2e2;color:#dc2626;border-radius:8px;padding:12px 16px;font-size:13px;margin-top:12px}
+.err{background:#fee2e2;color:#dc2626;border-radius:8px;padding:12px 16px;font-size:13px;margin-top:12px}
 </style>
 </head>
 <body>
 <header>
   <span class="brand">Dra. Charm</span>
   <span class="sep">/</span>
-  <span class="title">Validador de CEP</span>
+  <span class="htitle">Validador de CEP</span>
 </header>
 <div class="container">
   <div class="card">
     <div class="controls">
-      <div class="field">
-        <label>Data inicial</label>
-        <input type="date" id="dtInicio">
-      </div>
-      <div class="field">
-        <label>Data final</label>
-        <input type="date" id="dtFim">
-      </div>
-      <button class="btn btn-primary" id="btnBuscar">Buscar pedidos</button>
-      <button class="btn btn-secondary" id="btnHoje">Só hoje</button>
+      <div class="field"><label>Data inicial</label><input type="date" id="dtI"></div>
+      <div class="field"><label>Data final</label><input type="date" id="dtF"></div>
+      <button class="btn btn-primary" id="btnB">Buscar pedidos</button>
+      <button class="btn btn-secondary" id="btnH">Só hoje</button>
     </div>
-    <div id="errorMsg" class="error-msg" style="display:none"></div>
-    <div class="progress-wrap" id="progressWrap">
-      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
-      <div class="progress-text" id="progressText">Buscando detalhes dos pedidos...</div>
+    <div id="errMsg" class="err" style="display:none"></div>
+    <div class="prog-wrap" id="pw">
+      <div class="prog-bg"><div class="prog-fill" id="pf"></div></div>
+      <div class="prog-text" id="pt">Buscando detalhes...</div>
     </div>
   </div>
-
-  <div id="statsArea" style="display:none">
+  <div id="mainArea" style="display:none">
     <div class="stats">
-      <div class="stat"><div class="stat-label">Total de pedidos</div><div class="stat-value" id="statTotal">0</div></div>
-      <div class="stat"><div class="stat-label">CEP OK</div><div class="stat-value green" id="statOk">0</div></div>
-      <div class="stat"><div class="stat-label">Divergência</div><div class="stat-value orange" id="statDiv">0</div></div>
-      <div class="stat"><div class="stat-label">CEP inválido</div><div class="stat-value red" id="statInv">0</div></div>
+      <div class="stat"><div class="stat-label">Total de pedidos</div><div class="stat-value" id="sTotal">0</div></div>
+      <div class="stat"><div class="stat-label">CEP OK</div><div class="stat-value sv-green" id="sOk">0</div></div>
+      <div class="stat"><div class="stat-label">Divergência</div><div class="stat-value sv-orange" id="sDiv">0</div></div>
+      <div class="stat"><div class="stat-label">CEP inválido</div><div class="stat-value sv-red" id="sInv">0</div></div>
     </div>
     <div class="filters">
-      <button class="filter-btn active" data-filter="todos">Todos</button>
-      <button class="filter-btn" data-filter="ok">✓ OK</button>
-      <button class="filter-btn" data-filter="divergencia">⚠ Divergência</button>
-      <button class="filter-btn" data-filter="invalido">✗ Inválido</button>
-      <button class="export-btn" id="btnExport">↓ Exportar divergências</button>
+      <button class="fbtn active" data-f="todos">Todos</button>
+      <button class="fbtn" data-f="ok">✓ OK</button>
+      <button class="fbtn" data-f="divergencia">⚠ Divergência</button>
+      <button class="fbtn" data-f="invalido">✗ Inválido</button>
+      <button class="ebtn" id="btnEx">↓ Exportar divergências</button>
     </div>
     <div class="card" style="padding:0;overflow:hidden">
-      <table>
-        <thead><tr>
-          <th>Pedido</th><th>Cliente</th><th>CEP</th><th>Cidade / UF</th><th>Status</th><th>Detalhe</th>
-        </tr></thead>
-        <tbody id="tbody"></tbody>
-      </table>
-      <div class="empty" id="emptyState" style="display:none">
-        <div class="empty-icon">📦</div>
-        <p>Selecione o período e clique em <b>Buscar pedidos</b></p>
-      </div>
+      <table><thead><tr>
+        <th>Pedido</th><th>Cliente</th><th>CEP</th><th>Cidade / UF</th><th>Status</th><th>Detalhe</th>
+      </tr></thead><tbody id="tb"></tbody></table>
     </div>
   </div>
-  <div class="card" id="initialCard">
-    <div class="empty">
-      <div class="empty-icon">📦</div>
-      <p>Selecione o período e clique em <b>Buscar pedidos</b></p>
-    </div>
+  <div class="card" id="initCard">
+    <div class="empty"><div class="empty-icon">📦</div><p>Selecione o período e clique em <b>Buscar pedidos</b></p></div>
   </div>
 </div>
-
 <script>
-const $ = id => document.getElementById(id);
+const g = id => document.getElementById(id);
+const todayStr = () => new Date().toISOString().slice(0,10);
 
-// Set default dates
-function todayStr() { return new Date().toISOString().slice(0,10); }
-$('dtInicio').value = todayStr();
-$('dtFim').value = todayStr();
+g('dtI').value = todayStr();
+g('dtF').value = todayStr();
+g('btnH').onclick = () => { g('dtI').value = todayStr(); g('dtF').value = todayStr(); };
 
-$('btnHoje').onclick = () => {
-  $('dtInicio').value = todayStr();
-  $('dtFim').value = todayStr();
-};
-
-let allPedidos = [];
-let activeFilter = 'todos';
+let pedidos = [], filter = 'todos', accessToken = null;
 const cepCache = {};
 
-function validarCepLocal(cep) {
-  if (!cep || cep.length !== 8) return { status: 'invalido', motivo: 'CEP ausente ou incompleto' };
-  if (/^0+$/.test(cep) || /^(\d)\1{7}$/.test(cep)) return { status: 'invalido', motivo: 'CEP inválido (sequência repetida)' };
-  return { status: 'ok', motivo: null };
+function norm(s) {
+  return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
 }
 
-async function verificarViaCep(cep, enderecoEsperado, cidadeEsperada, estadoEsperado) {
-  if (cepCache[cep] !== undefined) return cepCache[cep];
+function valLocal(cep) {
+  if (!cep || cep.length !== 8) return { s:'invalido', m:'CEP ausente ou incompleto' };
+  if (/^0+$/.test(cep) || /^(\d)\1{7}$/.test(cep)) return { s:'invalido', m:'CEP inválido (sequência repetida)' };
+  return { s:'ok', m:null };
+}
+
+async function valViaCep(cep, cidadeEsp, estadoEsp) {
+  if (cepCache[cep]) return cepCache[cep];
   try {
-    const r = await fetch('https://viacep.com.br/ws/' + cep + '/json/');
+    const r = await fetch('https://viacep.com.br/ws/'+cep+'/json/');
     const d = await r.json();
-    if (d.erro) { cepCache[cep] = { status:'invalido', motivo:'CEP não encontrado no ViaCEP', cidade:'', estado:'' }; }
+    if (d.erro) { cepCache[cep]={s:'invalido',m:'CEP não encontrado',cidade:'',estado:''}; }
     else {
-      const cidade = d.localidade || '';
-      const estado = d.uf || '';
-      // Se cidade/estado foram preenchidos, verifica divergência
-      let status = 'ok', motivo = null;
-      if (cidadeEsperada && cidade && norm(cidade) !== norm(cidadeEsperada)) {
-        status = 'divergencia';
-        motivo = 'Cidade diverge: CEP é ' + cidade + '/' + estado + ' mas pedido tem ' + cidadeEsperada;
+      let s='ok', m=null;
+      const cidade = d.localidade||'', estado = d.uf||'';
+      if (cidadeEsp && cidade && norm(cidade)!==norm(cidadeEsp)) {
+        s='divergencia'; m='Cidade: CEP aponta para '+cidade+'/'+estado+' mas pedido tem '+cidadeEsp;
       }
-      cepCache[cep] = { status, motivo, cidade, estado };
+      cepCache[cep]={s,m,cidade,estado};
     }
     return cepCache[cep];
   } catch(_) {
-    cepCache[cep] = { status:'invalido', motivo:'Erro ao consultar ViaCEP', cidade:'', estado:'' };
+    cepCache[cep]={s:'invalido',m:'Erro ao consultar ViaCEP',cidade:'',estado:''};
     return cepCache[cep];
   }
 }
 
-function norm(s) {
-  if (!s) return '';
-  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'').trim();
-}
-
-async function buscarDetalhe(id) {
+async function buscarDet(id) {
   try {
-    const r = await fetch('/api/pedidos?id=' + id);
+    const url = '/api/pedidos?id='+id+(accessToken?'&token='+encodeURIComponent(accessToken):'');
+    const r = await fetch(url);
     if (!r.ok) return null;
     return await r.json();
   } catch(_) { return null; }
 }
 
-async function processarPedidos(lista) {
+async function processarLote(lista) {
   const total = lista.length;
   let done = 0;
+  g('pw').style.display='block'; g('pf').style.width='0%';
 
-  $('progressWrap').style.display = 'block';
-  $('progressFill').style.width = '0%';
+  for (let i=0; i<lista.length; i+=10) {
+    await Promise.all(lista.slice(i,i+10).map(async p => {
+      const det = await buscarDet(p.id);
+      const cep = det ? (det.cep||'') : '';
+      const cidade = det ? (det.cidade||'') : '';
+      const estado = det ? (det.estado||'') : '';
+      p.cep=cep; p.cidade=cidade; p.estado=estado;
+      p.endereco=det?(det.endereco||''):'';;
 
-  // Batch de 10 em paralelo
-  for (let i = 0; i < lista.length; i += 10) {
-    const lote = lista.slice(i, i + 10);
-    await Promise.all(lote.map(async p => {
-      const det = await buscarDetalhe(p.id);
-      const cep = det ? det.cep || '' : '';
-      const endereco = det ? det.endereco || '' : '';
-      const cidade = det ? det.cidade || '' : '';
-      const estado = det ? det.estado || '' : '';
-      const complemento = det ? det.complemento || '' : '';
-      const bairro = det ? det.bairro || '' : '';
-
-      // Validação local primeiro
-      const localCheck = validarCepLocal(cep);
-      let status, motivo;
-
-      if (localCheck.status === 'invalido') {
-        status = 'invalido';
-        motivo = localCheck.motivo;
-      } else {
-        // Verifica via ViaCEP
-        const viaCepCheck = await verificarViaCep(cep, endereco, cidade, estado);
-        status = viaCepCheck.status;
-        motivo = viaCepCheck.motivo;
-        // Atualiza cidade/estado com o do ViaCEP se disponível
-        if (viaCepCheck.cidade) { p.cidadeViacep = viaCepCheck.cidade; p.estadoViacep = viaCepCheck.estado; }
+      const loc = valLocal(cep);
+      if (loc.s==='invalido') { p.cep_s=loc.s; p.cep_m=loc.m; }
+      else {
+        const vc = await valViaCep(cep, cidade, estado);
+        p.cep_s=vc.s; p.cep_m=vc.m||'';
+        if (vc.cidade&&!cidade) { p.cidade=vc.cidade; p.estado=vc.estado; }
       }
 
-      p.cep = cep;
-      p.endereco = endereco;
-      p.cidade = cidade || (p.cidadeViacep || '');
-      p.estado = estado || (p.estadoViacep || '');
-      p.cep_status = status;
-      p.cep_motivo = motivo || '';
-
       done++;
-      const pct = Math.round((done / total) * 100);
-      $('progressFill').style.width = pct + '%';
-      $('progressText').textContent = 'Buscando detalhes: ' + done + ' / ' + total;
-
-      // Atualiza a linha na tabela em tempo real
-      renderRow(p);
-      updateStats();
+      const pct = Math.round((done/total)*100);
+      g('pf').style.width=pct+'%';
+      g('pt').textContent='Detalhes: '+done+' / '+total;
+      renderRow(p); updateStats();
     }));
   }
-
-  $('progressWrap').style.display = 'none';
+  g('pw').style.display='none';
 }
 
-function cepFormatado(cep) {
-  if (!cep || cep.length !== 8) return cep || '—';
-  return cep.substring(0,5) + '-' + cep.substring(5);
+function fmtCep(c) {
+  if (!c||c.length!==8) return c||'—';
+  return c.slice(0,5)+'-'+c.slice(5);
 }
+
+const badges = {
+  ok:'<span class="badge b-ok">✓ OK</span>',
+  divergencia:'<span class="badge b-div">⚠ Divergência</span>',
+  invalido:'<span class="badge b-inv">✗ Inválido</span>',
+  carregando:'<span class="badge b-load">⏳ Buscando...</span>'
+};
 
 function renderRow(p) {
-  let row = document.getElementById('row-' + p.id);
-  const statusBadge = {
-    'ok': '<span class="badge badge-ok">✓ OK</span>',
-    'divergencia': '<span class="badge badge-div">⚠ Divergência</span>',
-    'invalido': '<span class="badge badge-inv">✗ Inválido</span>',
-    'carregando': '<span class="badge badge-load">⏳ Buscando...</span>',
-  }[p.cep_status || 'carregando'] || '<span class="badge badge-load">⏳</span>';
-
-  const cidadeUf = p.cidade ? (p.cidade + (p.estado ? ' / ' + p.estado : '')) : '— / —';
-  const cepDisplay = '<span class="cep-mono">' + cepFormatado(p.cep) + '</span>';
-  const detalhe = p.cep_motivo ? ('<span style="color:#888;font-size:12px">' + p.cep_motivo + '</span>') : '';
-
-  const html = '<td>' + p.numero + '</td>' +
-    '<td>' + (p.cliente || '') + '</td>' +
-    '<td>' + cepDisplay + '</td>' +
-    '<td>' + cidadeUf + '</td>' +
-    '<td>' + statusBadge + '</td>' +
-    '<td>' + detalhe + '</td>';
-
-  if (!row) {
-    row = document.createElement('tr');
-    row.id = 'row-' + p.id;
-    $('tbody').appendChild(row);
-  }
-  row.innerHTML = html;
-  applyFilter();
+  let row = document.getElementById('r-'+p.id);
+  const badge = badges[p.cep_s||'carregando']||badges.carregando;
+  const cuf = p.cidade?(p.cidade+(p.estado?' / '+p.estado:'')):'— / —';
+  const det = p.cep_m?('<span style="color:#888;font-size:12px">'+p.cep_m+'</span>'):'';
+  const html = '<td>'+p.numero+'</td><td>'+(p.cliente||'')+'</td>'+
+    '<td><span class="mono">'+fmtCep(p.cep)+'</span></td>'+
+    '<td>'+cuf+'</td><td>'+badge+'</td><td>'+det+'</td>';
+  if (!row) { row=document.createElement('tr'); row.id='r-'+p.id; g('tb').appendChild(row); }
+  row.innerHTML=html; applyFilter();
 }
 
 function updateStats() {
-  const ok = allPedidos.filter(p => p.cep_status === 'ok').length;
-  const div = allPedidos.filter(p => p.cep_status === 'divergencia').length;
-  const inv = allPedidos.filter(p => p.cep_status === 'invalido').length;
-  $('statTotal').textContent = allPedidos.length;
-  $('statOk').textContent = ok;
-  $('statDiv').textContent = div;
-  $('statInv').textContent = inv;
+  const ok=pedidos.filter(p=>p.cep_s==='ok').length;
+  const dv=pedidos.filter(p=>p.cep_s==='divergencia').length;
+  const inv=pedidos.filter(p=>p.cep_s==='invalido').length;
+  g('sTotal').textContent=pedidos.length;
+  g('sOk').textContent=ok; g('sDiv').textContent=dv; g('sInv').textContent=inv;
 }
 
 function applyFilter() {
-  const rows = $('tbody').querySelectorAll('tr');
-  rows.forEach(row => {
-    const id = row.id.replace('row-','');
-    const p = allPedidos.find(x => String(x.id) === id);
+  g('tb').querySelectorAll('tr').forEach(row => {
+    const id=row.id.replace('r-','');
+    const p=pedidos.find(x=>String(x.id)===id);
     if (!p) return;
-    const show = activeFilter === 'todos' ||
-      (activeFilter === 'ok' && p.cep_status === 'ok') ||
-      (activeFilter === 'divergencia' && p.cep_status === 'divergencia') ||
-      (activeFilter === 'invalido' && p.cep_status === 'invalido');
-    row.style.display = show ? '' : 'none';
+    row.style.display=(filter==='todos'||filter===p.cep_s)?'':'none';
   });
 }
 
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeFilter = btn.dataset.filter;
-    applyFilter();
+document.querySelectorAll('.fbtn').forEach(b => {
+  b.onclick=()=>{
+    document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); filter=b.dataset.f; applyFilter();
   };
 });
 
-$('btnExport').onclick = () => {
-  const problemas = allPedidos.filter(p => p.cep_status !== 'ok');
-  if (!problemas.length) { alert('Nenhuma divergência encontrada.'); return; }
-  const header = 'Pedido,Cliente,CEP,Cidade,UF,Status,Motivo';
-  const rows = problemas.map(p =>
-    [p.numero, p.cliente, p.cep, p.cidade, p.estado, p.cep_status, p.cep_motivo].map(v => '"' + (v||'') + '"').join(',')
+g('btnEx').onclick=()=>{
+  const prob=pedidos.filter(p=>p.cep_s!=='ok');
+  if (!prob.length){alert('Nenhuma divergência encontrada.');return;}
+  const rows=prob.map(p=>
+    [p.numero,p.cliente,p.cep,p.cidade,p.estado,p.cep_s,p.cep_m]
+      .map(v=>'"'+(v||'')+'"').join(',')
   );
-  const csv = [header, ...rows].join('\n');
-  const blob = new Blob([csv], {type:'text/csv'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'divergencias_cep.csv';
-  a.click();
+  const csv=['Pedido,Cliente,CEP,Cidade,UF,Status,Motivo',...rows].join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='divergencias_cep.csv'; a.click();
 };
 
-$('btnBuscar').onclick = async () => {
-  const dtI = $('dtInicio').value;
-  const dtF = $('dtFim').value;
-  if (!dtI || !dtF) { alert('Selecione o período'); return; }
-
-  $('errorMsg').style.display = 'none';
-  $('btnBuscar').disabled = true;
-  $('btnBuscar').textContent = 'Buscando...';
-  $('initialCard').style.display = 'none';
-  $('statsArea').style.display = 'block';
-  $('tbody').innerHTML = '';
-  allPedidos = [];
-  updateStats();
+g('btnB').onclick=async()=>{
+  const dtI=g('dtI').value, dtF=g('dtF').value;
+  if(!dtI||!dtF){alert('Selecione o período');return;}
+  g('errMsg').style.display='none';
+  g('btnB').disabled=true; g('btnB').textContent='Buscando...';
+  g('initCard').style.display='none'; g('mainArea').style.display='block';
+  g('tb').innerHTML=''; pedidos=[]; accessToken=null; updateStats();
 
   try {
-    let pagina = 1, totalFetched = 0, totalExpected = null;
-    while (true) {
-      const url = '/api/pedidos?data_inicio=' + dtI + '&data_fim=' + dtF + '&pagina=' + pagina;
-      const r = await fetch(url);
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.erro || 'Erro na API');
+    let pag=1, fetched=0, total=null;
+    while(true){
+      const url='/api/pedidos?data_inicio='+dtI+'&data_fim='+dtF+'&pagina='+pag;
+      const r=await fetch(url); const d=await r.json();
+      if(!r.ok) throw new Error(d.erro||'Erro na API ('+r.status+')');
 
-      if (totalExpected === null) totalExpected = d.total;
-      const lote = d.pedidos || [];
-      if (!lote.length) break;
+      // Guarda o access token para reutilizar nas chamadas de detalhe
+      if (d._t) accessToken = d._t;
 
-      // Adiciona com status "carregando"
-      lote.forEach(p => { p.cep_status = 'carregando'; p.cep = ''; allPedidos.push(p); renderRow(p); });
-      totalFetched += lote.length;
-      updateStats();
+      if(total===null) total=d.total;
+      const lote=d.pedidos||[];
+      if(!lote.length) break;
 
-      // Busca detalhes em paralelo
-      await processarPedidos(lote);
+      lote.forEach(p=>{ p.cep_s='carregando'; p.cep=''; pedidos.push(p); renderRow(p); });
+      fetched+=lote.length; updateStats();
 
-      if (lote.length < 100 || totalFetched >= totalExpected) break;
-      pagina++;
+      await processarLote(lote);
+      if(lote.length<100||fetched>=total) break;
+      pag++;
     }
-  } catch(err) {
-    $('errorMsg').textContent = err.message;
-    $('errorMsg').style.display = 'block';
+    if(!pedidos.length) {
+      g('tb').innerHTML='<tr><td colspan="6" style="text-align:center;padding:40px;color:#bbb">Nenhum pedido no período</td></tr>';
+    }
+  } catch(err){
+    g('errMsg').textContent=err.message; g('errMsg').style.display='block';
   }
-
-  $('btnBuscar').disabled = false;
-  $('btnBuscar').textContent = 'Buscar pedidos';
+  g('btnB').disabled=false; g('btnB').textContent='Buscar pedidos';
 };
 </script>
 </body>
