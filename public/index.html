@@ -2,482 +2,361 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Validador de CEP — Dra. Charm</title>
 <style>
-  :root {
-    --pink: #c0557a;
-    --pink-light: #f9eef3;
-    --pink-mid: #e8a0bc;
-    --red: #c0392b;
-    --red-light: #fdf0ef;
-    --amber: #b7681a;
-    --amber-light: #fdf5e8;
-    --green: #2e7d51;
-    --green-light: #edf7f2;
-    --gray-50: #f8f7f6;
-    --gray-100: #efefed;
-    --gray-200: #deddd9;
-    --gray-400: #9c9b96;
-    --gray-600: #5e5d5a;
-    --gray-800: #2c2b28;
-    --radius: 10px;
-    --radius-sm: 6px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gray-50); color: var(--gray-800); min-height: 100vh; }
-
-  header {
-    background: #fff;
-    border-bottom: 1px solid var(--gray-200);
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    height: 56px;
-  }
-  .logo { font-size: 15px; font-weight: 600; color: var(--pink); letter-spacing: -0.3px; }
-  .logo span { color: var(--gray-400); font-weight: 400; margin-left: 4px; font-size: 13px; }
-
-  main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
-
-  .toolbar {
-    background: #fff;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--radius);
-    padding: 1rem 1.25rem;
-    display: flex;
-    gap: 1rem;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    margin-bottom: 1.5rem;
-  }
-  .field { display: flex; flex-direction: column; gap: 4px; }
-  .field label { font-size: 12px; color: var(--gray-600); font-weight: 500; }
-  .field input[type=date] {
-    border: 1px solid var(--gray-200);
-    border-radius: var(--radius-sm);
-    padding: 7px 10px;
-    font-size: 13px;
-    color: var(--gray-800);
-    background: var(--gray-50);
-    cursor: pointer;
-  }
-  .field input[type=date]:focus { outline: 2px solid var(--pink-mid); border-color: transparent; }
-
-  .btn {
-    padding: 8px 18px;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: opacity .15s, transform .1s;
-  }
-  .btn:active { transform: scale(0.98); }
-  .btn-primary { background: var(--pink); color: #fff; }
-  .btn-primary:hover { opacity: .88; }
-  .btn-primary:disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; transform: none; }
-  .btn-outline { background: #fff; border: 1px solid var(--gray-200); color: var(--gray-600); }
-  .btn-outline:hover { background: var(--gray-50); }
-
-  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
-  .metric {
-    background: #fff;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--radius);
-    padding: 1rem 1.25rem;
-  }
-  .metric-label { font-size: 12px; color: var(--gray-400); margin-bottom: 4px; }
-  .metric-val { font-size: 26px; font-weight: 600; }
-  .metric-val.ok { color: var(--green); }
-  .metric-val.div { color: var(--amber); }
-  .metric-val.inv { color: var(--red); }
-
-  .filters {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 1rem;
-  }
-  .filter-label { font-size: 12px; color: var(--gray-400); margin-right: 4px; }
-  .filter-btn {
-    padding: 5px 14px;
-    border-radius: 99px;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    border: 1px solid var(--gray-200);
-    background: #fff;
-    color: var(--gray-600);
-    transition: all .12s;
-  }
-  .filter-btn.active { background: var(--gray-800); color: #fff; border-color: transparent; }
-  .filter-btn.ok.active { background: var(--green); }
-  .filter-btn.div.active { background: var(--amber); }
-  .filter-btn.inv.active { background: var(--red); }
-
-  .card {
-    background: #fff;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .tbl-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th {
-    text-align: left;
-    padding: 10px 14px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    color: var(--gray-400);
-    background: var(--gray-50);
-    border-bottom: 1px solid var(--gray-200);
-    white-space: nowrap;
-  }
-  td { padding: 10px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--gray-50); }
-
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 10px;
-    border-radius: 99px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-  .badge-ok { background: var(--green-light); color: var(--green); }
-  .badge-div { background: var(--amber-light); color: var(--amber); }
-  .badge-inv { background: var(--red-light); color: var(--red); }
-  .badge-pend { background: var(--gray-100); color: var(--gray-600); }
-
-  .diff-old { color: var(--red); text-decoration: line-through; font-size: 11px; display: block; }
-  .diff-new { color: var(--green); font-size: 11px; display: block; }
-
-  .progress-wrap { margin-bottom: 1.5rem; }
-  .progress-bar { height: 5px; background: var(--gray-100); border-radius: 3px; overflow: hidden; }
-  .progress-fill { height: 100%; background: var(--pink); border-radius: 3px; transition: width .3s; }
-  .progress-label { font-size: 12px; color: var(--gray-400); margin-top: 6px; }
-
-  .empty {
-    padding: 3rem;
-    text-align: center;
-    color: var(--gray-400);
-    font-size: 14px;
-  }
-  .empty-icon { font-size: 36px; margin-bottom: 12px; opacity: .4; }
-
-  .actions-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .cep-mono { font-family: monospace; font-size: 13px; }
-  .num-pedido { font-family: monospace; font-size: 12px; color: var(--gray-400); }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f3f0;color:#222;min-height:100vh}
+header{padding:14px 24px;border-bottom:1px solid #e8e0d8;background:#fff;display:flex;align-items:center;gap:8px}
+header .brand{font-weight:700;color:#a0446a;font-size:15px}
+header .sep{color:#ccc}
+header .title{font-size:14px;color:#888}
+.container{max-width:1100px;margin:0 auto;padding:24px 16px}
+.card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.controls{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.field label{display:block;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.field input[type=date]{border:1.5px solid #ddd;border-radius:8px;padding:8px 12px;font-size:14px;outline:none;color:#333;background:#fafafa;height:38px}
+.field input[type=date]:focus{border-color:#a0446a}
+.btn{height:38px;padding:0 18px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.btn-primary{background:#a0446a;color:#fff}.btn-primary:hover{opacity:.88}
+.btn-secondary{background:#fff;border:1.5px solid #ddd;color:#555}.btn-secondary:hover{background:#f8f8f8}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+.stat{background:#fff;border-radius:10px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.stat-label{font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.4px}
+.stat-value{font-size:28px;font-weight:700;margin-top:4px}
+.stat-value.green{color:#16a34a}.stat-value.orange{color:#ea580c}.stat-value.red{color:#dc2626}
+.progress-wrap{margin-top:20px;display:none}
+.progress-bar-bg{height:6px;background:#eee;border-radius:3px;overflow:hidden}
+.progress-bar-fill{height:100%;background:#a0446a;border-radius:3px;transition:width .3s;width:0}
+.progress-text{font-size:12px;color:#888;margin-top:6px}
+.filters{display:flex;align-items:center;gap:8px;margin:20px 0 12px;flex-wrap:wrap}
+.filter-btn{padding:6px 14px;border-radius:20px;border:1.5px solid #ddd;font-size:13px;cursor:pointer;background:#fff;color:#555;font-weight:500;transition:all .15s}
+.filter-btn.active{background:#a0446a;border-color:#a0446a;color:#fff}
+.export-btn{margin-left:auto;padding:6px 14px;border-radius:8px;border:1.5px solid #ddd;font-size:13px;cursor:pointer;background:#fff;color:#555;font-weight:500}
+.export-btn:hover{background:#f0f0f0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #eee}
+tbody tr{border-bottom:1px solid #f5f5f5}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:12px 14px;vertical-align:middle}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-ok{background:#dcfce7;color:#16a34a}
+.badge-div{background:#fff7ed;color:#ea580c}
+.badge-inv{background:#fee2e2;color:#dc2626}
+.badge-load{background:#f5f5f5;color:#aaa}
+.cep-mono{font-family:monospace;font-size:13px}
+.empty{text-align:center;padding:60px 0;color:#bbb}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty p{font-size:14px}
+.error-msg{background:#fee2e2;color:#dc2626;border-radius:8px;padding:12px 16px;font-size:13px;margin-top:12px}
 </style>
 </head>
 <body>
-
 <header>
-  <div class="logo">Dra. Charm <span>/ Validador de CEP</span></div>
+  <span class="brand">Dra. Charm</span>
+  <span class="sep">/</span>
+  <span class="title">Validador de CEP</span>
 </header>
-
-<main>
-
-  <!-- Toolbar -->
-  <div class="toolbar">
-    <div class="field">
-      <label>Data inicial</label>
-      <input type="date" id="data-inicio">
-    </div>
-    <div class="field">
-      <label>Data final</label>
-      <input type="date" id="data-fim">
-    </div>
-    <button class="btn btn-primary" id="btn-buscar" onclick="buscar()">Buscar pedidos</button>
-    <button class="btn btn-outline" id="btn-hoje" onclick="setHoje()">Só hoje</button>
-  </div>
-
-  <!-- Progress -->
-  <div class="progress-wrap" id="progress-wrap" style="display:none">
-    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-    <div class="progress-label" id="progress-label">Buscando pedidos...</div>
-  </div>
-
-  <!-- Metrics -->
-  <div class="metrics" id="metrics" style="display:none">
-    <div class="metric"><div class="metric-label">Total de pedidos</div><div class="metric-val" id="m-total">0</div></div>
-    <div class="metric"><div class="metric-label">CEP OK</div><div class="metric-val ok" id="m-ok">0</div></div>
-    <div class="metric"><div class="metric-label">Divergência</div><div class="metric-val div" id="m-div">0</div></div>
-    <div class="metric"><div class="metric-label">CEP inválido</div><div class="metric-val inv" id="m-inv">0</div></div>
-  </div>
-
-  <!-- Results -->
-  <div id="results-section" style="display:none">
-    <div class="actions-row">
-      <div class="filters">
-        <span class="filter-label">Filtrar:</span>
-        <button class="filter-btn active" data-f="all" onclick="setFilter('all',this)">Todos</button>
-        <button class="filter-btn ok" data-f="ok" onclick="setFilter('ok',this)">✓ OK</button>
-        <button class="filter-btn div" data-f="div" onclick="setFilter('div',this)">⚠ Divergência</button>
-        <button class="filter-btn inv" data-f="inv" onclick="setFilter('inv',this)">✗ Inválido</button>
+<div class="container">
+  <div class="card">
+    <div class="controls">
+      <div class="field">
+        <label>Data inicial</label>
+        <input type="date" id="dtInicio">
       </div>
-      <button class="btn btn-outline" onclick="exportarCSV()">↓ Exportar divergências</button>
+      <div class="field">
+        <label>Data final</label>
+        <input type="date" id="dtFim">
+      </div>
+      <button class="btn btn-primary" id="btnBuscar">Buscar pedidos</button>
+      <button class="btn btn-secondary" id="btnHoje">Só hoje</button>
     </div>
-    <div class="card">
-      <div class="tbl-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Pedido</th>
-              <th>Cliente</th>
-              <th>CEP</th>
-              <th>Cidade / UF</th>
-              <th>Status</th>
-              <th>Detalhe</th>
-            </tr>
-          </thead>
-          <tbody id="tbl-body"></tbody>
-        </table>
-        <div id="tbl-empty" class="empty" style="display:none">
-          <div class="empty-icon">✓</div>
-          <div>Nenhum resultado neste filtro</div>
-        </div>
+    <div id="errorMsg" class="error-msg" style="display:none"></div>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">Buscando detalhes dos pedidos...</div>
+    </div>
+  </div>
+
+  <div id="statsArea" style="display:none">
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Total de pedidos</div><div class="stat-value" id="statTotal">0</div></div>
+      <div class="stat"><div class="stat-label">CEP OK</div><div class="stat-value green" id="statOk">0</div></div>
+      <div class="stat"><div class="stat-label">Divergência</div><div class="stat-value orange" id="statDiv">0</div></div>
+      <div class="stat"><div class="stat-label">CEP inválido</div><div class="stat-value red" id="statInv">0</div></div>
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" data-filter="todos">Todos</button>
+      <button class="filter-btn" data-filter="ok">✓ OK</button>
+      <button class="filter-btn" data-filter="divergencia">⚠ Divergência</button>
+      <button class="filter-btn" data-filter="invalido">✗ Inválido</button>
+      <button class="export-btn" id="btnExport">↓ Exportar divergências</button>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table>
+        <thead><tr>
+          <th>Pedido</th><th>Cliente</th><th>CEP</th><th>Cidade / UF</th><th>Status</th><th>Detalhe</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="emptyState" style="display:none">
+        <div class="empty-icon">📦</div>
+        <p>Selecione o período e clique em <b>Buscar pedidos</b></p>
       </div>
     </div>
   </div>
-
-  <!-- Estado inicial -->
-  <div id="estado-inicial" class="card">
+  <div class="card" id="initialCard">
     <div class="empty">
       <div class="empty-icon">📦</div>
-      <div>Selecione o período e clique em <strong>Buscar pedidos</strong></div>
+      <p>Selecione o período e clique em <b>Buscar pedidos</b></p>
     </div>
   </div>
-
-</main>
+</div>
 
 <script>
-// ─── Utilitários ───────────────────────────────────────────────────
-function norm(s) {
-  if (!s) return "";
-  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "").trim();
-}
-function cleanCep(s) { return (s || "").replace(/\D/g, ""); }
-function today() { return new Date().toISOString().slice(0, 10); }
+const $ = id => document.getElementById(id);
 
-// ─── Estado ────────────────────────────────────────────────────────
-let allResults = [];
-let currentFilter = "all";
+// Set default dates
+function todayStr() { return new Date().toISOString().slice(0,10); }
+$('dtInicio').value = todayStr();
+$('dtFim').value = todayStr();
 
-// ─── Init ──────────────────────────────────────────────────────────
-document.getElementById("data-inicio").value = today();
-document.getElementById("data-fim").value = today();
+$('btnHoje').onclick = () => {
+  $('dtInicio').value = todayStr();
+  $('dtFim').value = todayStr();
+};
 
-function setHoje() {
-  document.getElementById("data-inicio").value = today();
-  document.getElementById("data-fim").value = today();
-}
-
-// ─── Buscar pedidos via API ────────────────────────────────────────
-async function fetchPedidos(inicio, fim) {
-  let todos = [];
-  let offset = 0;
-  const LIMIT = 200;
-
-  while (true) {
-    const url = `/api/pedidos?data_inicio=${inicio}&data_fim=${fim}&offset=${offset}`;
-    const res = await fetch(url);
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.erro || `Erro HTTP ${res.status}`);
-    }
-    const data = await res.json();
-    todos = todos.concat(data.pedidos || []);
-    if (todos.length >= data.total || (data.pedidos || []).length < LIMIT) break;
-    offset += LIMIT;
-  }
-  return todos;
-}
-
-// ─── Validar CEP via ViaCEP ────────────────────────────────────────
+let allPedidos = [];
+let activeFilter = 'todos';
 const cepCache = {};
-async function validateCep(cep) {
-  const c = cleanCep(cep);
-  if (c.length !== 8) return { valid: false, data: null, msg: "CEP inválido (não tem 8 dígitos)" };
-  if (cepCache[c]) return cepCache[c];
+
+function validarCepLocal(cep) {
+  if (!cep || cep.length !== 8) return { status: 'invalido', motivo: 'CEP ausente ou incompleto' };
+  if (/^0+$/.test(cep) || /^(\d)\1{7}$/.test(cep)) return { status: 'invalido', motivo: 'CEP inválido (sequência repetida)' };
+  return { status: 'ok', motivo: null };
+}
+
+async function verificarViaCep(cep, enderecoEsperado, cidadeEsperada, estadoEsperado) {
+  if (cepCache[cep] !== undefined) return cepCache[cep];
   try {
-    const r = await fetch(`https://viacep.com.br/ws/${c}/json/`);
+    const r = await fetch('https://viacep.com.br/ws/' + cep + '/json/');
     const d = await r.json();
-    const result = d.erro ? { valid: false, data: null, msg: "CEP não encontrado nos Correios" } : { valid: true, data: d };
-    cepCache[c] = result;
-    return result;
-  } catch {
-    return { valid: false, data: null, msg: "Erro ao consultar ViaCEP" };
+    if (d.erro) { cepCache[cep] = { status:'invalido', motivo:'CEP não encontrado no ViaCEP', cidade:'', estado:'' }; }
+    else {
+      const cidade = d.localidade || '';
+      const estado = d.uf || '';
+      // Se cidade/estado foram preenchidos, verifica divergência
+      let status = 'ok', motivo = null;
+      if (cidadeEsperada && cidade && norm(cidade) !== norm(cidadeEsperada)) {
+        status = 'divergencia';
+        motivo = 'Cidade diverge: CEP é ' + cidade + '/' + estado + ' mas pedido tem ' + cidadeEsperada;
+      }
+      cepCache[cep] = { status, motivo, cidade, estado };
+    }
+    return cepCache[cep];
+  } catch(_) {
+    cepCache[cep] = { status:'invalido', motivo:'Erro ao consultar ViaCEP', cidade:'', estado:'' };
+    return cepCache[cep];
   }
 }
 
-// ─── Comparar endereço ─────────────────────────────────────────────
-function compare(pedido, viaCep) {
-  const issues = [];
-  const cidade = norm(pedido.cidade);
-  const estado = norm(pedido.estado);
-  const viaCidade = norm(viaCep.localidade);
-  const viaUf = norm(viaCep.uf);
-
-  if (cidade && viaCidade && !viaCidade.includes(cidade) && !cidade.includes(viaCidade)) {
-    issues.push({ field: "Cidade", digitado: pedido.cidade, correto: viaCep.localidade });
-  }
-  if (estado && viaUf && estado !== viaUf) {
-    issues.push({ field: "Estado", digitado: pedido.estado.toUpperCase(), correto: viaCep.uf.toUpperCase() });
-  }
-  return issues;
+function norm(s) {
+  if (!s) return '';
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'').trim();
 }
 
-// ─── Orquestrador principal ────────────────────────────────────────
-async function buscar() {
-  const inicio = document.getElementById("data-inicio").value;
-  const fim = document.getElementById("data-fim").value;
-  if (!inicio || !fim) return alert("Selecione o período.");
+async function buscarDetalhe(id) {
+  try {
+    const r = await fetch('/api/pedidos?id=' + id);
+    if (!r.ok) return null;
+    return await r.json();
+  } catch(_) { return null; }
+}
 
-  document.getElementById("btn-buscar").disabled = true;
-  document.getElementById("estado-inicial").style.display = "none";
-  document.getElementById("results-section").style.display = "none";
-  document.getElementById("metrics").style.display = "none";
-  document.getElementById("progress-wrap").style.display = "block";
-  setProgress(0, "Buscando pedidos na Loja Integrada...");
+async function processarPedidos(lista) {
+  const total = lista.length;
+  let done = 0;
+
+  $('progressWrap').style.display = 'block';
+  $('progressFill').style.width = '0%';
+
+  // Batch de 10 em paralelo
+  for (let i = 0; i < lista.length; i += 10) {
+    const lote = lista.slice(i, i + 10);
+    await Promise.all(lote.map(async p => {
+      const det = await buscarDetalhe(p.id);
+      const cep = det ? det.cep || '' : '';
+      const endereco = det ? det.endereco || '' : '';
+      const cidade = det ? det.cidade || '' : '';
+      const estado = det ? det.estado || '' : '';
+      const complemento = det ? det.complemento || '' : '';
+      const bairro = det ? det.bairro || '' : '';
+
+      // Validação local primeiro
+      const localCheck = validarCepLocal(cep);
+      let status, motivo;
+
+      if (localCheck.status === 'invalido') {
+        status = 'invalido';
+        motivo = localCheck.motivo;
+      } else {
+        // Verifica via ViaCEP
+        const viaCepCheck = await verificarViaCep(cep, endereco, cidade, estado);
+        status = viaCepCheck.status;
+        motivo = viaCepCheck.motivo;
+        // Atualiza cidade/estado com o do ViaCEP se disponível
+        if (viaCepCheck.cidade) { p.cidadeViacep = viaCepCheck.cidade; p.estadoViacep = viaCepCheck.estado; }
+      }
+
+      p.cep = cep;
+      p.endereco = endereco;
+      p.cidade = cidade || (p.cidadeViacep || '');
+      p.estado = estado || (p.estadoViacep || '');
+      p.cep_status = status;
+      p.cep_motivo = motivo || '';
+
+      done++;
+      const pct = Math.round((done / total) * 100);
+      $('progressFill').style.width = pct + '%';
+      $('progressText').textContent = 'Buscando detalhes: ' + done + ' / ' + total;
+
+      // Atualiza a linha na tabela em tempo real
+      renderRow(p);
+      updateStats();
+    }));
+  }
+
+  $('progressWrap').style.display = 'none';
+}
+
+function cepFormatado(cep) {
+  if (!cep || cep.length !== 8) return cep || '—';
+  return cep.substring(0,5) + '-' + cep.substring(5);
+}
+
+function renderRow(p) {
+  let row = document.getElementById('row-' + p.id);
+  const statusBadge = {
+    'ok': '<span class="badge badge-ok">✓ OK</span>',
+    'divergencia': '<span class="badge badge-div">⚠ Divergência</span>',
+    'invalido': '<span class="badge badge-inv">✗ Inválido</span>',
+    'carregando': '<span class="badge badge-load">⏳ Buscando...</span>',
+  }[p.cep_status || 'carregando'] || '<span class="badge badge-load">⏳</span>';
+
+  const cidadeUf = p.cidade ? (p.cidade + (p.estado ? ' / ' + p.estado : '')) : '— / —';
+  const cepDisplay = '<span class="cep-mono">' + cepFormatado(p.cep) + '</span>';
+  const detalhe = p.cep_motivo ? ('<span style="color:#888;font-size:12px">' + p.cep_motivo + '</span>') : '';
+
+  const html = '<td>' + p.numero + '</td>' +
+    '<td>' + (p.cliente || '') + '</td>' +
+    '<td>' + cepDisplay + '</td>' +
+    '<td>' + cidadeUf + '</td>' +
+    '<td>' + statusBadge + '</td>' +
+    '<td>' + detalhe + '</td>';
+
+  if (!row) {
+    row = document.createElement('tr');
+    row.id = 'row-' + p.id;
+    $('tbody').appendChild(row);
+  }
+  row.innerHTML = html;
+  applyFilter();
+}
+
+function updateStats() {
+  const ok = allPedidos.filter(p => p.cep_status === 'ok').length;
+  const div = allPedidos.filter(p => p.cep_status === 'divergencia').length;
+  const inv = allPedidos.filter(p => p.cep_status === 'invalido').length;
+  $('statTotal').textContent = allPedidos.length;
+  $('statOk').textContent = ok;
+  $('statDiv').textContent = div;
+  $('statInv').textContent = inv;
+}
+
+function applyFilter() {
+  const rows = $('tbody').querySelectorAll('tr');
+  rows.forEach(row => {
+    const id = row.id.replace('row-','');
+    const p = allPedidos.find(x => String(x.id) === id);
+    if (!p) return;
+    const show = activeFilter === 'todos' ||
+      (activeFilter === 'ok' && p.cep_status === 'ok') ||
+      (activeFilter === 'divergencia' && p.cep_status === 'divergencia') ||
+      (activeFilter === 'invalido' && p.cep_status === 'invalido');
+    row.style.display = show ? '' : 'none';
+  });
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    applyFilter();
+  };
+});
+
+$('btnExport').onclick = () => {
+  const problemas = allPedidos.filter(p => p.cep_status !== 'ok');
+  if (!problemas.length) { alert('Nenhuma divergência encontrada.'); return; }
+  const header = 'Pedido,Cliente,CEP,Cidade,UF,Status,Motivo';
+  const rows = problemas.map(p =>
+    [p.numero, p.cliente, p.cep, p.cidade, p.estado, p.cep_status, p.cep_motivo].map(v => '"' + (v||'') + '"').join(',')
+  );
+  const csv = [header, ...rows].join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'divergencias_cep.csv';
+  a.click();
+};
+
+$('btnBuscar').onclick = async () => {
+  const dtI = $('dtInicio').value;
+  const dtF = $('dtFim').value;
+  if (!dtI || !dtF) { alert('Selecione o período'); return; }
+
+  $('errorMsg').style.display = 'none';
+  $('btnBuscar').disabled = true;
+  $('btnBuscar').textContent = 'Buscando...';
+  $('initialCard').style.display = 'none';
+  $('statsArea').style.display = 'block';
+  $('tbody').innerHTML = '';
+  allPedidos = [];
+  updateStats();
 
   try {
-    const pedidos = await fetchPedidos(inicio, fim);
-    if (!pedidos.length) {
-      setProgress(100, "Nenhum pedido encontrado nesse período.");
-      showResults([]);
-      return;
+    let pagina = 1, totalFetched = 0, totalExpected = null;
+    while (true) {
+      const url = '/api/pedidos?data_inicio=' + dtI + '&data_fim=' + dtF + '&pagina=' + pagina;
+      const r = await fetch(url);
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.erro || 'Erro na API');
+
+      if (totalExpected === null) totalExpected = d.total;
+      const lote = d.pedidos || [];
+      if (!lote.length) break;
+
+      // Adiciona com status "carregando"
+      lote.forEach(p => { p.cep_status = 'carregando'; p.cep = ''; allPedidos.push(p); renderRow(p); });
+      totalFetched += lote.length;
+      updateStats();
+
+      // Busca detalhes em paralelo
+      await processarPedidos(lote);
+
+      if (lote.length < 100 || totalFetched >= totalExpected) break;
+      pagina++;
     }
-
-    const resultados = [];
-    for (let i = 0; i < pedidos.length; i++) {
-      const p = pedidos[i];
-      setProgress(Math.round((i / pedidos.length) * 100),
-        `Validando CEP ${i + 1} de ${pedidos.length}...`);
-      await new Promise(r => setTimeout(r, 60)); // respeitar rate limit ViaCEP
-
-      const via = await validateCep(p.cep);
-      let status, issues = [], msg = "";
-      if (!via.valid) { status = "inv"; msg = via.msg; }
-      else {
-        issues = compare(p, via.data);
-        status = issues.length ? "div" : "ok";
-      }
-      resultados.push({ pedido: p, status, issues, msg, viaCep: via.data });
-    }
-
-    setProgress(100, "Concluído.");
-    setTimeout(() => document.getElementById("progress-wrap").style.display = "none", 800);
-    showResults(resultados);
-  } catch (err) {
-    alert("Erro: " + err.message);
-    document.getElementById("progress-wrap").style.display = "none";
-    document.getElementById("estado-inicial").style.display = "block";
-  } finally {
-    document.getElementById("btn-buscar").disabled = false;
+  } catch(err) {
+    $('errorMsg').textContent = err.message;
+    $('errorMsg').style.display = 'block';
   }
-}
 
-// ─── UI Helpers ────────────────────────────────────────────────────
-function setProgress(pct, label) {
-  document.getElementById("progress-fill").style.width = pct + "%";
-  document.getElementById("progress-label").textContent = label;
-}
-
-function showResults(resultados) {
-  allResults = resultados;
-  const counts = { ok: 0, div: 0, inv: 0 };
-  resultados.forEach(r => counts[r.status]++);
-
-  document.getElementById("m-total").textContent = resultados.length;
-  document.getElementById("m-ok").textContent = counts.ok;
-  document.getElementById("m-div").textContent = counts.div;
-  document.getElementById("m-inv").textContent = counts.inv;
-  document.getElementById("metrics").style.display = "grid";
-  document.getElementById("results-section").style.display = "block";
-
-  renderTabela(resultados);
-}
-
-function renderTabela(resultados) {
-  const tbody = document.getElementById("tbl-body");
-  tbody.innerHTML = "";
-
-  if (!resultados.length) {
-    document.getElementById("tbl-empty").style.display = "block";
-    return;
-  }
-  document.getElementById("tbl-empty").style.display = "none";
-
-  resultados.forEach(({ pedido: p, status, issues, msg }) => {
-    const badge = status === "ok"
-      ? `<span class="badge badge-ok">✓ OK</span>`
-      : status === "div"
-        ? `<span class="badge badge-div">⚠ Divergência</span>`
-        : `<span class="badge badge-inv">✗ Inválido</span>`;
-
-    let detalhe = "";
-    if (status === "ok") detalhe = `<span style="font-size:12px;color:#9c9b96">Endereço confirmado</span>`;
-    else if (status === "inv") detalhe = `<span style="font-size:12px;color:var(--red)">${msg}</span>`;
-    else detalhe = issues.map(is =>
-      `<span class="diff-old">${is.field}: ${is.digitado}</span><span class="diff-new">→ ${is.correto}</span>`
-    ).join("");
-
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td><span class="num-pedido">${p.numero}</span></td>
-      <td>${p.cliente}<br><span style="font-size:11px;color:#9c9b96">${p.telefone}</span></td>
-      <td><span class="cep-mono">${p.cep || "—"}</span></td>
-      <td style="font-size:12px">${p.cidade || "—"} / ${(p.estado || "—").toUpperCase()}</td>
-      <td>${badge}</td>
-      <td>${detalhe}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function setFilter(f, btn) {
-  currentFilter = f;
-  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  const filtered = f === "all" ? allResults : allResults.filter(r => r.status === f);
-  renderTabela(filtered);
-}
-
-function exportarCSV() {
-  const problemas = allResults.filter(r => r.status !== "ok");
-  if (!problemas.length) { alert("Nenhuma divergência para exportar."); return; }
-
-  const linhas = ["Pedido,Cliente,Telefone,CEP,Cidade digitada,Estado digitado,Problema,Cidade correta,Estado correto"];
-  problemas.forEach(({ pedido: p, status, issues, msg }) => {
-    if (issues.length) {
-      issues.forEach(is => {
-        linhas.push([p.numero, p.cliente, p.telefone, p.cep, p.cidade, p.estado, is.field, is.correto, ""].map(x => `"${x}"`).join(","));
-      });
-    } else {
-      linhas.push([p.numero, p.cliente, p.telefone, p.cep, p.cidade, p.estado, msg, "", ""].map(x => `"${x}"`).join(","));
-    }
-  });
-
-  const blob = new Blob(["\uFEFF" + linhas.join("\n")], { type: "text/csv;charset=utf-8;" });
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-  a.download = `divergencias_cep_${today()}.csv`; a.click();
-}
+  $('btnBuscar').disabled = false;
+  $('btnBuscar').textContent = 'Buscar pedidos';
+};
 </script>
 </body>
 </html>
