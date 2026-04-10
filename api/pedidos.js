@@ -136,6 +136,7 @@ export default async function handler(req, res) {
     const pedidos = lista.map(p => ({
       id: p.id,
       numero: p.numero,
+      numeroLI: p.numeroPedidoCompra || p.numeroLoja || "",
       cliente: (p.contato && p.contato.nome) || "",
       telefone: (p.contato && (p.contato.telefone || p.contato.celular)) || "",
       situacao_id: (p.situacao && p.situacao.id) || null,
