@@ -307,7 +307,7 @@ function renderRow(p) {
   const badge = badges[p.cep_s||'carregando']||badges.carregando;
   const cuf = p.cidade?(p.cidade+(p.estado?' / '+p.estado:'')):'— / —';
   const det = p.cep_m?('<div class="det-msg">'+p.cep_m+'</div>'):'';
-  const html = '<td>'+p.numero+'</td><td style="max-width:200px">'+escHtml(p.cliente||'')+'</td>'+
+  const html = (p.numeroLI?'<td><b>'+p.numeroLI+'</b><br><span style="font-size:10px;color:#bbb">Bling '+p.numero+'</span></td>':'<td><b>'+p.numero+'</b></td>')<td style="max-width:200px">'+escHtml(p.cliente||'')+'</td>'+
     '<td><span class="mono">'+fmtCep(p.cep)+'</span></td>'+
     '<td>'+escHtml(cuf)+'</td><td>'+sitBadge(window.__sitMap&&p.situacao_id?window.__sitMap[p.situacao_id]:'')+'</td><td>'+badge+det+'</td><td></td>';
   if (!row) { row=document.createElement('tr'); row.id='r-'+p.id; g('tb').appendChild(row); }
