@@ -150,6 +150,9 @@ tbody td,thead th{padding:8px 10px}
 </div>
 
 <script>
+// Mapa fixo de situacoes Bling (inclui customizadas da Dra. Charm)
+window.__sitMap={6:'Em aberto',9:'Atendido',11:'Verificado',12:'Cancelado',15:'Em andamento',3:'Checkout parcial',4:'Aguardando pagamento',8:'Devolucao total',118079:'Atendido: TAYMAH'};
+
 const g = id => document.getElementById(id);
 const todayStr = () => new Date().toISOString().slice(0,10);
 g('dtI').value = todayStr();
@@ -417,6 +420,4 @@ g('btnB').onclick=async()=>{
 };
 </script>
 </body>
-</html>// Mapa fixo de situacoes Bling (inclui customizadas da Dra. Charm)
-window.__sitMap={6:'Em aberto',9:'Atendido',11:'Verificado',12:'Cancelado',15:'Em andamento',3:'Checkout parcial',4:'Aguardando pagamento',8:'Devolucao total',118079:'Atendido: TAYMAH'};
-
+</html>
