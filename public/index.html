@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Validador de CEP — Dra. Charm</title>
-<link rel="icon" type="image/png" href="https://cdn.awsli.com.br/1930/1930166/arquivos/favicon-dra-charm.png">
-<link rel="apple-touch-icon" href="https://cdn.awsli.com.br/1930/1930166/arquivos/favicon-dra-charm.png">
+<link rel="icon" type="image/png" href="https://cdn.awsli.com.br/1930/1930166/arquivos/logo-principal-dra--charm.png">
+<link rel="apple-touch-icon" href="https://cdn.awsli.com.br/1930/1930166/arquivos/logo-principal-dra--charm.png">
 <meta property="og:title" content="Validador de CEP — Dra. Charm">
 <meta property="og:image" content="https://cdn.awsli.com.br/1930/1930166/arquivos/logo-principal-dra--charm.png">
 <meta property="og:type" content="website">
@@ -245,8 +245,8 @@ async function processarLote(lista) {
   let done = 0;
   g('pw').style.display='block';
 
-  for (let i=0; i<lista.length; i+=3) {
-    await Promise.all(lista.slice(i,i+3).map(async p => {
+  for (let i=0; i<lista.length; i+=8) {
+    await Promise.all(lista.slice(i,i+8).map(async p => {
       const det = await buscarDet(p.id);
       const cep = det ? (det.cep||'') : '';
       const cidade = det ? (det.cidade||'') : '';
@@ -374,7 +374,29 @@ g('btnB').onclick=async()=>{
       const r=await fetch(url); const d=await r.json();
       if(!r.ok) throw new Error(d.erro||'Erro na API ('+r.status+')');
 
-      if (d._t) accessToken = d._t;
+      if (d._t) {
+        accessToken = d._t;
+        // Uma vez por sessao: busca situacoes customizadas com token ja obtido
+        if (!window.__sitLoaded) {
+          window.__sitLoaded = true;
+          fetch('/api/situacoes?token=' + encodeURIComponent(d._t))
+            .then(r => r.json())
+            .then(d2 => {
+              const sel = g('selSit');
+              const existingVals = new Set(Array.from(sel.options).map(o => String(o.value)));
+              (d2.situacoes || []).forEach(st => {
+                window.__sitMap[st.id] = st.nome;
+                if (!existingVals.has(String(st.id))) {
+                  const o = document.createElement('option');
+                  o.value = st.id; o.textContent = st.nome;
+                  sel.appendChild(o);
+                }
+              });
+              // Re-renderiza todas as rows para pegar situacoes customizadas
+              if (window.pedidos) window.pedidos.forEach(p => renderRow(p));
+            }).catch(() => {});
+        }
+      }
       const lote=d.pedidos||[];
       if(!lote.length) break;
 
