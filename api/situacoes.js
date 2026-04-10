@@ -16,7 +16,8 @@ async function lerRefreshToken() {
     try {
       const r = await fetch("https://edge-config.vercel.com/" + ec.ecId + "/item/bling_refresh_token?token=" + ec.token);
       if (r.ok) { const val = await r.json(); if (val) return val; }
-}
+    } catch (_) {}
+  }
   return process.env.BLING_REFRESH_TOKEN || null;
 }
 
@@ -41,6 +42,9 @@ const FALLBACK = [
   { id: 11, nome: "Verificado" },
   { id: 12, nome: "Cancelado" },
   { id: 15, nome: "Em andamento" },
+  { id: 3,  nome: "Checkout parcial" },
+  { id: 4,  nome: "Aguardando pagamento" },
+  { id: 8,  nome: "Devolucao total" },
 ];
 
 export default async function handler(req, res) {
