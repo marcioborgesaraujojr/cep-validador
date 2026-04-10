@@ -134,7 +134,7 @@ tbody td,thead th{padding:8px 10px}
     </div>
     <div class="table-wrap">
       <table><thead><tr>
-        <th>Pedido</th><th>Cliente</th><th>CEP</th><th>Cidade / UF</th><th>Situação</th><th>Status CEP</th><th>Detalhe</th>
+        <th>Pedido (LI)</th><th>Cliente</th><th>CEP</th><th>Cidade / UF</th><th>Situação</th><th>Status CEP</th><th>Detalhe</th>
       </tr></thead><tbody id="tb"></tbody></table>
     </div>
   </div>
@@ -346,10 +346,10 @@ g('btnEx').onclick=()=>{
   const prob=pedidos.filter(p=>p.cep_s!=='ok'&&p.cep_s!=='carregando');
   if (!prob.length){alert('Nenhum problema encontrado.');return;}
   const rows=prob.map(p=>
-    [p.numero,p.cliente,p.cep,p.cidade,p.estado,p.rua,p.situacao,p.cep_s,p.cep_m]
+    [p.numeroLI||'',p.numero,p.cliente,p.cep,p.cidade,p.estado,p.rua,p.situacao,p.cep_s,p.cep_m]
       .map(v=>'"'+(v||'').replace(/"/g,'""')+'"').join(',')
   );
-  const csv=['Pedido,Cliente,CEP,Cidade,UF,Rua,Situação,Status,Mensagem',...rows].join('\n');
+  const csv=['Pedido LI,Pedido Bling,Cliente,CEP,Cidade,UF,Rua,Situação,Status,Mensagem',...rows].join('\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   a.download='problemas_cep.csv'; a.click();
@@ -417,4 +417,6 @@ g('btnB').onclick=async()=>{
 };
 </script>
 </body>
-</html>
+</html>// Mapa fixo de situacoes Bling (inclui customizadas da Dra. Charm)
+window.__sitMap={6:'Em aberto',9:'Atendido',11:'Verificado',12:'Cancelado',15:'Em andamento',3:'Checkout parcial',4:'Aguardando pagamento',8:'Devolucao total',118079:'Atendido: TAYMAH'};
+
