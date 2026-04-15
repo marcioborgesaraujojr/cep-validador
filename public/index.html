@@ -11,7 +11,8 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://cdn.awsli.com.br/1930/1930166/arquivos/logo-principal-dra--charm.png">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;
+if(sessionStorage.getItem('cep_redo')){sessionStorage.removeItem('cep_redo');setTimeout(()=>document.getElementById('btnB').click(),800);}600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Roboto',Arial,sans-serif;background:#f5f5f5;color:#171717;min-height:100vh}
@@ -248,8 +249,8 @@ async function processarLote(lista) {
   let done = 0;
   g('pw').style.display='block';
 
-  for (let i=0; i<lista.length; i+=8) {
-    await Promise.all(lista.slice(i,i+8).map(async p => {
+  for (let i=0; i<lista.length; i+=4) {
+    await Promise.all(lista.slice(i,i+4).map(async p => {
       const det = await buscarDet(p.id);
       const cep = det ? (det.cep||'') : '';
       const cidade = det ? (det.cidade||'') : '';
@@ -372,10 +373,11 @@ g('btnB').onclick=async()=>{
     let pag=1;
     while(true){
       let url='/api/pedidos?data_inicio='+dtI+'&data_fim='+dtF+'&pagina='+pag;
+      if(pag>1&&accessToken)url+='&token='+encodeURIComponent(accessToken);
       // sitVal pode ser o ID numerico (da API situacoes) ou slug (em_aberto etc)
       if(sitVal) url+='&idSituacao='+sitVal;
       const r=await fetch(url); const d=await r.json();
-      if(!r.ok) throw new Error(d.erro||'Erro na API ('+r.status+')');
+      if(!r.ok){const emsg=(d.erro||'').toLowerCase();if(emsg.includes('invalido')){g('errMsg').innerHTML='Token expirado. <b>Reconectando...</b>';g('errMsg').style.display='block';sessionStorage.setItem('cep_redo','1');setTimeout(()=>{window.location.href='/api/setup';},1500);return;}throw new Error(d.erro||'Erro na API ('+r.status+')');});
 
       if (d._t) {
         accessToken = d._t;
