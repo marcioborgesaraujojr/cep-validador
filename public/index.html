@@ -377,7 +377,7 @@ g('btnB').onclick=async()=>{
       // sitVal pode ser o ID numerico (da API situacoes) ou slug (em_aberto etc)
       if(sitVal) url+='&idSituacao='+sitVal;
       const r=await fetch(url); const d=await r.json();
-      if(!r.ok){const emsg=(d.erro||'').toLowerCase();if(emsg.includes('invalido')){g('errMsg').innerHTML='Token expirado. <b>Reconectando...</b>';g('errMsg').style.display='block';sessionStorage.setItem('cep_redo','1');setTimeout(()=>{window.location.href='/api/setup';},1500);return;}throw new Error(d.erro||'Erro na API ('+r.status+')');});
+      if(!r.ok){const emsg=(d.erro||'').toLowerCase();if(emsg.includes('invalido')){g('errMsg').innerHTML='Token expirado. <b>Reconectando...</b>';g('errMsg').style.display='block';sessionStorage.setItem('cep_redo','1');setTimeout(function(){window.location.href='/api/setup';},1500);return;}const errMsg2=d.erro||'Erro na API '+r.status;throw new Error(errMsg2);}
 
       if (d._t) {
         accessToken = d._t;
