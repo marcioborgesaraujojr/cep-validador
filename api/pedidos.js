@@ -21,6 +21,33 @@ async function lerRefreshToken() {
   return process.env.BLING_REFRESH_TOKEN || null;
 }
 
+async function lerAccessTokenCache() {
+  const ec = parseEC();
+  if (!ec) return null;
+  try {
+    const r = await fetch("https://edge-config.vercel.com/" + ec.ecId + "/item/bling_access_cache?token=" + ec.token);
+    if (!r.ok) return null;
+    const raw = await r.json();
+    if (!raw) return null;
+    const { token, expires } = JSON.parse(raw);
+    if (token && expires && Date.now() < expires) return token;
+  } catch (_) {}
+  return null;
+}
+
+async function salvarAccessTokenCache(accessToken) {
+  const ec = parseEC();
+  if (!ec || !process.env.VERCEL_TOKEN) return;
+  const cache = JSON.stringify({ token: accessToken, expires: Date.now() + 55 * 60 * 1000 });
+  try {
+    await fetch("https://api.vercel.com/v1/edge-config/" + ec.ecId + "/items", {
+      method: "PATCH",
+      headers: { Authorization: "Bearer " + process.env.VERCEL_TOKEN, "Content-Type": "application/json" },
+      body: JSON.stringify({ items: [{ operation: "upsert", key: "bling_access_cache", value: cache }] }),
+    });
+  } catch (_) {}
+}
+
 async function salvarRefreshToken(novoToken) {
   const ec = parseEC();
   if (ec && process.env.VERCEL_TOKEN) {
@@ -49,8 +76,10 @@ async function salvarRefreshToken(novoToken) {
 }
 
 async function getAccessToken() {
+  const cached = await lerAccessTokenCache();
+  if (cached) return cached;
   const refreshToken = await lerRefreshToken();
-  if (!refreshToken) throw new Error("Refresh token nao configurado. Acesse /api/setup.");
+  if (!refreshToken) throw new Error("Token Bling invalido. Acesse /api/setup para reconectar.");
   const creds = Buffer.from(process.env.BLING_CLIENT_ID + ":" + process.env.BLING_CLIENT_SECRET).toString("base64");
   const r = await fetch("https://www.bling.com.br/Api/v3/oauth/token", {
     method: "POST",
@@ -60,6 +89,7 @@ async function getAccessToken() {
   const d = await r.json();
   if (!d.access_token) throw new Error("Token Bling invalido. Acesse /api/setup para reconectar.");
   if (d.refresh_token && d.refresh_token !== refreshToken) await salvarRefreshToken(d.refresh_token);
+  salvarAccessTokenCache(d.access_token);
   return d.access_token;
 }
 
@@ -84,7 +114,6 @@ export default async function handler(req, res) {
 
   const { id, token: passedToken, data_inicio, data_fim, pagina = 1 } = req.query;
 
-  // --- ENDPOINT DE DETALHE ---
   if (id) {
     const token = passedToken || await getAccessToken();
     try {
@@ -94,13 +123,7 @@ export default async function handler(req, res) {
       const d = await blingRes.json();
       if (req.query._debug) {
         const transp = (d.data || {}).transporte || {};
-        return res.json({
-          status: blingRes.status, has_data: !!d.data,
-          data_keys: d.data ? Object.keys(d.data) : [],
-          transporte_keys: Object.keys(transp),
-          etiqueta: transp.etiqueta || null,
-          ec_ok: !!parseEC(),
-        });
+        return res.json({ status: blingRes.status, has_data: !!d.data, data_keys: d.data ? Object.keys(d.data) : [], transporte_keys: Object.keys(transp), etiqueta: transp.etiqueta || null, ec_ok: !!parseEC() });
       }
       if (!blingRes.ok) return res.status(blingRes.status).json({ erro: "Bling " + blingRes.status });
       return res.json(extrairEndereco(d.data || {}));
@@ -109,33 +132,22 @@ export default async function handler(req, res) {
     }
   }
 
-  // --- ENDPOINT DE LISTA ---
   if (!data_inicio || !data_fim) return res.status(400).json({ erro: "data_inicio e data_fim obrigatorios" });
 
   try {
-    // Paginas 2+ passam token ja obtido para evitar multiplas rotacoes
     const token = passedToken || await getAccessToken();
     const paramsObj = { dataInicial: data_inicio, dataFinal: data_fim, pagina, limite: 100 };
-
-    // Aceita situacao_id (ID numerico real do Bling, vindo do endpoint /api/situacoes)
-    // Aceita tambem situacao (nome curto legado) para compatibilidade
     const situacaoId = req.query.situacao_id;
     const situacaoNome = req.query.situacao;
     const SITUACOES_LEGADO = { em_aberto: 6, atendido: 9, cancelado: 12, em_andamento: 15 };
-
-    if (situacaoId) {
-      paramsObj.idSituacao = situacaoId; // ID real do Bling
-    } else if (situacaoNome && SITUACOES_LEGADO[situacaoNome]) {
-      paramsObj.idSituacao = SITUACOES_LEGADO[situacaoNome];
-    }
-
+    if (situacaoId) { paramsObj.idSituacao = situacaoId; }
+    else if (situacaoNome && SITUACOES_LEGADO[situacaoNome]) { paramsObj.idSituacao = SITUACOES_LEGADO[situacaoNome]; }
     const params = new URLSearchParams(paramsObj);
     const r = await fetch("https://www.bling.com.br/Api/v3/pedidos/vendas?" + params, {
       headers: { Authorization: "Bearer " + token },
     });
     const d = await r.json();
     if (!r.ok) return res.status(r.status).json({ erro: "Bling API " + r.status });
-
     const lista = d.data || [];
     const pedidos = lista.map(p => ({
       id: p.id,
@@ -146,16 +158,7 @@ export default async function handler(req, res) {
       situacao_id: (p.situacao && p.situacao.id) || null,
       data: p.data || "",
     }));
-
-    if (req.query._debug_sit) {
-      return res.json({ raw_sit: lista.slice(0,3).map(p => ({num: p.numero, sit: p.situacao})) });
-    }
-    return res.json({
-      pagina: Number(pagina),
-      pedidos,
-      hasMore: lista.length === 100,
-      _t: token,
-    });
+    return res.json({ pagina: Number(pagina), pedidos, hasMore: lista.length === 100, _t: token });
   } catch (err) {
     return res.status(500).json({ erro: err.message });
   }
