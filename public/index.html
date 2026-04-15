@@ -12,6 +12,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://cdn.awsli.com.br/1930/1930166/arquivos/logo-principal-dra--charm.png">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;
+        salvarTokenLocal(d._t);
 if(sessionStorage.getItem('cep_redo')){sessionStorage.removeItem('cep_redo');setTimeout(()=>document.getElementById('btnB').click(),800);}600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -367,8 +368,9 @@ g('btnB').onclick=async()=>{
   g('errMsg').style.display='none';
   g('btnB').disabled=true; g('btnB').textContent='Buscando...';
   g('initCard').style.display='none'; g('mainArea').style.display='block';
-  g('tb').innerHTML=''; pedidos=[]; accessToken=sessionStorage.getItem('bling_at')||null;
-sessionStorage.removeItem('bling_at'); updateStats();
+function lerTokenLocal(){try{const stored=JSON.parse(localStorage.getItem('bling_access')||'null');if(stored&&stored.token&&Date.now()<stored.exp)return stored.token;}catch(_){}return null;}
+function salvarTokenLocal(tok){try{localStorage.setItem('bling_access',JSON.stringify({token:tok,exp:Date.now()+55*60*1000}));}catch(_){}}
+let pedidos=[],filter='todos',accessToken=lerTokenLocal()||null;
 
   try {
     let pag=1;
