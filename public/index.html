@@ -367,13 +367,14 @@ g('btnB').onclick=async()=>{
   g('errMsg').style.display='none';
   g('btnB').disabled=true; g('btnB').textContent='Buscando...';
   g('initCard').style.display='none'; g('mainArea').style.display='block';
-  g('tb').innerHTML=''; pedidos=[]; accessToken=null; updateStats();
+  g('tb').innerHTML=''; pedidos=[]; accessToken=sessionStorage.getItem('bling_at')||null;
+sessionStorage.removeItem('bling_at'); updateStats();
 
   try {
     let pag=1;
     while(true){
       let url='/api/pedidos?data_inicio='+dtI+'&data_fim='+dtF+'&pagina='+pag;
-      if(pag>1&&accessToken)url+='&token='+encodeURIComponent(accessToken);
+      if(accessToken)url+='&token='+encodeURIComponent(accessToken);
       // sitVal pode ser o ID numerico (da API situacoes) ou slug (em_aberto etc)
       if(sitVal) url+='&idSituacao='+sitVal;
       const r=await fetch(url); const d=await r.json();
