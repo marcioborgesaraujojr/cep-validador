@@ -1,4 +1,4 @@
-// Callback do OAuth Bling — salva o refresh token no Edge Config (solucao definitiva)
+// Callback do OAuth Bling — salva refresh token e redireciona com access_token
 const PROJ = "prj_ErH4xc9FokreQHv0utp1xJ2eGvdO";
 const TEAM = "team_Hv0Wqku1l7HhDDiJZmR2u5Ze";
 
@@ -12,69 +12,28 @@ function parseEC() {
 }
 
 async function salvarToken(refreshToken) {
-  const results = [];
-
-  // 1. Salva no Edge Config (principal — sem caching, dinamico)
   const ec = parseEC();
   if (ec && process.env.VERCEL_TOKEN) {
-    try {
-      const r = await fetch(
-        "https://api.vercel.com/v1/edge-config/" + ec.ecId + "/items",
-        {
+    for (let i = 0; i < 3; i++) {
+      try {
+        const r = await fetch("https://api.vercel.com/v1/edge-config/" + ec.ecId + "/items", {
           method: "PATCH",
-          headers: {
-            Authorization: "Bearer " + process.env.VERCEL_TOKEN,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            items: [{ operation: "upsert", key: "bling_refresh_token", value: refreshToken }]
-          }),
-        }
-      );
-      results.push("Edge Config: " + (r.ok ? "OK" : "ERRO " + r.status));
-    } catch (e) {
-      results.push("Edge Config: EXCECAO " + e.message);
-    }
-  } else {
-    results.push("Edge Config: NAO CONFIGURADO");
-  }
-
-  // 2. Salva na env var do Vercel (fallback — pode ter delay de caching)
-  if (process.env.VERCEL_TOKEN) {
-    try {
-      const listR = await fetch(
-        "https://api.vercel.com/v9/projects/" + PROJ + "/env?teamId=" + TEAM,
-        { headers: { Authorization: "Bearer " + process.env.VERCEL_TOKEN } }
-      );
-      const listD = await listR.json();
-      const env = (listD.envs || []).find(e => e.key === "BLING_REFRESH_TOKEN");
-      if (env) {
-        const pR = await fetch(
-          "https://api.vercel.com/v9/projects/" + PROJ + "/env/" + env.id + "?teamId=" + TEAM,
-          {
-            method: "PATCH",
-            headers: { Authorization: "Bearer " + process.env.VERCEL_TOKEN, "Content-Type": "application/json" },
-            body: JSON.stringify({ value: refreshToken }),
-          }
-        );
-        results.push("Env var: " + (pR.ok ? "OK" : "ERRO " + pR.status));
-      }
-    } catch (e) {
-      results.push("Env var: EXCECAO " + e.message);
+          headers: { Authorization: "Bearer " + process.env.VERCEL_TOKEN, "Content-Type": "application/json" },
+          body: JSON.stringify({ items: [{ operation: "upsert", key: "bling_refresh_token", value: refreshToken }] }),
+        });
+        if (r.ok) return "Edge Config: OK";
+      } catch (_) {}
+      if (i < 2) await new Promise(res => setTimeout(res, 200));
     }
   }
-
-  return results;
+  return "Edge Config: ERRO";
 }
 
 export default async function handler(req, res) {
   const { code } = req.query;
   if (!code) return res.status(400).send("Parametro code ausente.");
 
-  const creds = Buffer.from(
-    process.env.BLING_CLIENT_ID + ":" + process.env.BLING_CLIENT_SECRET
-  ).toString("base64");
-
+  const creds = Buffer.from(process.env.BLING_CLIENT_ID + ":" + process.env.BLING_CLIENT_SECRET).toString("base64");
   const tokenRes = await fetch("https://www.bling.com.br/Api/v3/oauth/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded", Authorization: "Basic " + creds },
@@ -82,28 +41,24 @@ export default async function handler(req, res) {
   });
 
   const tokenData = await tokenRes.json();
-  if (!tokenData.refresh_token) {
-    return res.status(500).send("Erro ao obter token: " + JSON.stringify(tokenData));
-  }
+  if (!tokenData.refresh_token) return res.status(500).send("Erro ao obter token: " + JSON.stringify(tokenData));
 
-  const results = await salvarToken(tokenData.refresh_token);
-  const allOk = results.some(r => r.includes("OK"));
+  await salvarToken(tokenData.refresh_token);
 
-  const statusColor = allOk ? "green" : "orange";
-  const statusMsg = allOk
-    ? "Token salvo com sucesso!"
-    : "Salvamento parcial — verifique os detalhes abaixo.";
-
+  // Salva access_token no sessionStorage via JS e redireciona automaticamente para o app
+  // Isso evita o ciclo: callback -> usuario clica "Voltar" -> pagina carrega -> token ja rotacionou
+  const at = tokenData.access_token || '';
   res.setHeader("Content-Type", "text/html");
   return res.status(200).send(`
-    <html><body style="font-family:sans-serif;max-width:600px;margin:40px auto;padding:20px">
-      <h2>Autorizacao concluida!</h2>
-      <p style="color:${statusColor};font-weight:bold">${statusMsg}</p>
-      <ul>${results.map(r => '<li>' + r + '</li>').join('')}</ul>
-      <p style="margin-top:16px;font-size:13px;color:#888">
-        Refresh token: <code style="font-size:11px">${tokenData.refresh_token}</code>
-      </p>
-      <p><a href="/">Voltar ao app</a></p>
+    <html><head><meta charset="UTF-8"></head>
+    <body style="font-family:sans-serif;text-align:center;padding:60px">
+      <p style="color:#888">Conectado ao Bling! Redirecionando...</p>
+      <script>
+        try { sessionStorage.setItem('bling_at', '${at}'); } catch(_) {}
+        sessionStorage.removeItem('cep_redo');
+        sessionStorage.removeItem('cep_redirect_after_auth');
+        window.location.href = '/';
+      </script>
     </body></html>
   `);
 }
