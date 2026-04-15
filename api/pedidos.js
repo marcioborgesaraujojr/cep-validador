@@ -24,14 +24,17 @@ async function lerRefreshToken() {
 async function salvarRefreshToken(novoToken) {
   const ec = parseEC();
   if (ec && process.env.VERCEL_TOKEN) {
-    try {
-      const r = await fetch("https://api.vercel.com/v1/edge-config/" + ec.ecId + "/items", {
-        method: "PATCH",
-        headers: { Authorization: "Bearer " + process.env.VERCEL_TOKEN, "Content-Type": "application/json" },
-        body: JSON.stringify({ items: [{ operation: "upsert", key: "bling_refresh_token", value: novoToken }] }),
-      });
-      if (r.ok) return;
-    } catch (_) {}
+    for (let i = 0; i < 3; i++) {
+      try {
+        const r = await fetch("https://api.vercel.com/v1/edge-config/" + ec.ecId + "/items", {
+          method: "PATCH",
+          headers: { Authorization: "Bearer " + process.env.VERCEL_TOKEN, "Content-Type": "application/json" },
+          body: JSON.stringify({ items: [{ operation: "upsert", key: "bling_refresh_token", value: novoToken }] }),
+        });
+        if (r.ok) return;
+      } catch (_) {}
+      if (i < 2) await new Promise(res => setTimeout(res, 200));
+    }
   }
   const envId = process.env.VERCEL_ENV_ID;
   if (envId && process.env.VERCEL_TOKEN) {
@@ -110,7 +113,8 @@ export default async function handler(req, res) {
   if (!data_inicio || !data_fim) return res.status(400).json({ erro: "data_inicio e data_fim obrigatorios" });
 
   try {
-    const token = await getAccessToken();
+    // Paginas 2+ passam token ja obtido para evitar multiplas rotacoes
+    const token = passedToken || await getAccessToken();
     const paramsObj = { dataInicial: data_inicio, dataFinal: data_fim, pagina, limite: 100 };
 
     // Aceita situacao_id (ID numerico real do Bling, vindo do endpoint /api/situacoes)
