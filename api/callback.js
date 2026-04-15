@@ -57,8 +57,8 @@ export default async function handler(req, res) {
     <body style="font-family:sans-serif;text-align:center;padding:60px;color:#888">
       <p>✓ Conectado ao Bling! Redirecionando...</p>
       <script>
-        try { sessionStorage.setItem('bling_at', '${at}'); } catch(_) {}
-        sessionStorage.removeItem('cep_redo');
+        try { localStorage.setItem('bling_access', JSON.stringify({token:'${at}',exp:Date.now()+55*60*1000})); } catch(_) {}
+        sessionStorage.removeItem('cep_redo'); sessionStorage.removeItem('bling_at');
         sessionStorage.removeItem('cep_redirect_after_auth');
         window.location.href = '/';
       </script>
