@@ -326,9 +326,12 @@ function updateStats() {
   const dv  = pedidos.filter(p=>p.cep_s==='divergencia').length;
   const rua = pedidos.filter(p=>p.cep_s==='atencao_rua').length;
   const inv = pedidos.filter(p=>p.cep_s==='invalido').length;
-  g('sTotal').textContent=pedidos.length;
-  g('sOk').textContent=ok; g('sDiv').textContent=dv;
-  g('sRua').textContent=rua; g('sInv').textContent=inv;
+  const tot = pedidos.length;
+  g('sTotal').textContent = tot;
+  g('sOk').textContent    = ok;
+  g('sDiv').textContent   = dv;
+  g('sRua').textContent   = rua;
+  g('sInv').textContent   = inv;
 }
 
 function applyFilter() {
