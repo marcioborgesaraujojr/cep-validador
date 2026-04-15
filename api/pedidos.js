@@ -29,8 +29,9 @@ async function lerAccessTokenCache() {
     if (!r.ok) return null;
     const raw = await r.json();
     if (!raw) return null;
-    const { token, expires } = JSON.parse(raw);
-    if (token && expires && Date.now() < expires) return token;
+    // Edge Config pode retornar o valor como objeto ou como string JSON
+    const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    if (parsed && parsed.token && parsed.expires && Date.now() < parsed.expires) return parsed.token;
   } catch (_) {}
   return null;
 }
