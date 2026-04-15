@@ -1,4 +1,4 @@
-// Callback do OAuth Bling — salva refresh token e redireciona com access_token
+// Callback do OAuth Bling — salva refresh token, cacheia access_token, redireciona automaticamente
 const PROJ = "prj_ErH4xc9FokreQHv0utp1xJ2eGvdO";
 const TEAM = "team_Hv0Wqku1l7HhDDiJZmR2u5Ze";
 
@@ -11,22 +11,21 @@ function parseEC() {
   } catch (_) { return null; }
 }
 
-async function salvarToken(refreshToken) {
+async function salvarNoEdgeConfig(items) {
   const ec = parseEC();
-  if (ec && process.env.VERCEL_TOKEN) {
-    for (let i = 0; i < 3; i++) {
-      try {
-        const r = await fetch("https://api.vercel.com/v1/edge-config/" + ec.ecId + "/items", {
-          method: "PATCH",
-          headers: { Authorization: "Bearer " + process.env.VERCEL_TOKEN, "Content-Type": "application/json" },
-          body: JSON.stringify({ items: [{ operation: "upsert", key: "bling_refresh_token", value: refreshToken }] }),
-        });
-        if (r.ok) return "Edge Config: OK";
-      } catch (_) {}
-      if (i < 2) await new Promise(res => setTimeout(res, 200));
-    }
+  if (!ec || !process.env.VERCEL_TOKEN) return false;
+  for (let i = 0; i < 3; i++) {
+    try {
+      const r = await fetch("https://api.vercel.com/v1/edge-config/" + ec.ecId + "/items", {
+        method: "PATCH",
+        headers: { Authorization: "Bearer " + process.env.VERCEL_TOKEN, "Content-Type": "application/json" },
+        body: JSON.stringify({ items }),
+      });
+      if (r.ok) return true;
+    } catch (_) {}
+    if (i < 2) await new Promise(res => setTimeout(res, 200));
   }
-  return "Edge Config: ERRO";
+  return false;
 }
 
 export default async function handler(req, res) {
@@ -43,16 +42,20 @@ export default async function handler(req, res) {
   const tokenData = await tokenRes.json();
   if (!tokenData.refresh_token) return res.status(500).send("Erro ao obter token: " + JSON.stringify(tokenData));
 
-  await salvarToken(tokenData.refresh_token);
+  // Salva refresh_token E cacheia access_token (55min) num unico PATCH para atomicidade
+  const cache = JSON.stringify({ token: tokenData.access_token, expires: Date.now() + 55 * 60 * 1000 });
+  await salvarNoEdgeConfig([
+    { operation: "upsert", key: "bling_refresh_token", value: tokenData.refresh_token },
+    { operation: "upsert", key: "bling_access_cache", value: cache },
+  ]);
 
-  // Salva access_token no sessionStorage via JS e redireciona automaticamente para o app
-  // Isso evita o ciclo: callback -> usuario clica "Voltar" -> pagina carrega -> token ja rotacionou
+  // Redireciona automaticamente, salvando access_token no sessionStorage do browser
   const at = tokenData.access_token || '';
   res.setHeader("Content-Type", "text/html");
   return res.status(200).send(`
     <html><head><meta charset="UTF-8"></head>
-    <body style="font-family:sans-serif;text-align:center;padding:60px">
-      <p style="color:#888">Conectado ao Bling! Redirecionando...</p>
+    <body style="font-family:sans-serif;text-align:center;padding:60px;color:#888">
+      <p>✓ Conectado ao Bling! Redirecionando...</p>
       <script>
         try { sessionStorage.setItem('bling_at', '${at}'); } catch(_) {}
         sessionStorage.removeItem('cep_redo');
