@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Validador de CEP â Dra. Charm</title>
+<title>Validador de CEP — Dra. Charm</title>
 <link rel="icon" type="image/png" href="https://cdn.awsli.com.br/1930/1930166/favicon/sem-ti-tulo-1-46c8llhz70.png">
 <link rel="apple-touch-icon" href="https://cdn.awsli.com.br/1930/1930166/favicon/sem-ti-tulo-1-46c8llhz70.png">
-<meta property="og:title" content="Validador de CEP â Dra. Charm">
+<meta property="og:title" content="Validador de CEP — Dra. Charm">
 <meta property="og:image" content="https://cdn.awsli.com.br/1930/1930166/arquivos/logo-principal-dra--charm.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -92,7 +92,7 @@ tbody td,thead th{padding:8px 10px}
 
 <div class="header">
   <img class="header-logo" src="https://cdn.awsli.com.br/1930/1930166/arquivos/logo-principal-dra--charm.png" alt="Dra. Charm">
-  <p class="header-sub">Sistema Verificador de CEP Â· Pedidos</p>
+  <p class="header-sub">Sistema Verificador de CEP · Pedidos</p>
 </div>
 
 <div class="container">
@@ -101,13 +101,13 @@ tbody td,thead th{padding:8px 10px}
       <div class="field"><label>Data inicial</label><input type="date" id="dtI"></div>
       <div class="field"><label>Data final</label><input type="date" id="dtF"></div>
       <div class="field">
-        <label>SituaÃ§Ã£o</label>
+        <label>Situação</label>
         <select id="selSit">
-          <option value="">Todas as situaÃ§Ãµes</option>
+          <option value="">Todas as situações</option>
         </select>
       </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px"><button class="btn btn-primary" id="btnB">ð Buscar pedidos</button>
-      <button class="btn btn-secondary" id="btnH">SÃ³ hoje</button></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px"><button class="btn btn-primary" id="btnB">🔍 Buscar pedidos</button>
+      <button class="btn btn-secondary" id="btnH">Só hoje</button></div>
     </div>
     <div id="errMsg" class="err" style="display:none"></div>
     <div class="prog-wrap" id="pw">
@@ -120,32 +120,32 @@ tbody td,thead th{padding:8px 10px}
     <div class="stats">
       <div class="stat"><div class="stat-label">Total</div><div class="stat-value" id="sTotal">0</div></div>
       <div class="stat"><div class="stat-label">CEP OK</div><div class="stat-value sv-green" id="sOk">0</div></div>
-      <div class="stat"><div class="stat-label">DivergÃªncia</div><div class="stat-value sv-orange" id="sDiv">0</div></div>
-      <div class="stat"><div class="stat-label">AtenÃ§Ã£o rua</div><div class="stat-value sv-amber" id="sRua">0</div></div>
-      <div class="stat"><div class="stat-label">CEP InvÃ¡lido</div><div class="stat-value sv-red" id="sInv">0</div></div>
+      <div class="stat"><div class="stat-label">Divergência</div><div class="stat-value sv-orange" id="sDiv">0</div></div>
+      <div class="stat"><div class="stat-label">Atenção rua</div><div class="stat-value sv-amber" id="sRua">0</div></div>
+      <div class="stat"><div class="stat-label">CEP Inválido</div><div class="stat-value sv-red" id="sInv">0</div></div>
     </div>
     <div class="filters">
       <button class="fbtn active" data-f="todos">Todos</button>
-      <button class="fbtn a-ok" data-f="ok">â OK</button>
-      <button class="fbtn a-div" data-f="divergencia">â  DivergÃªncia cidade</button>
-      <button class="fbtn a-rua" data-f="atencao_rua">â¡ AtenÃ§Ã£o rua</button>
-      <button class="fbtn" data-f="invalido">â InvÃ¡lido</button>
-      <button class="ebtn" id="btnEx">â Exportar problemas</button>
+      <button class="fbtn a-ok" data-f="ok">✓ OK</button>
+      <button class="fbtn a-div" data-f="divergencia">⚠ Divergência cidade</button>
+      <button class="fbtn a-rua" data-f="atencao_rua">⚡ Atenção rua</button>
+      <button class="fbtn" data-f="invalido">✗ Inválido</button>
+      <button class="ebtn" id="btnEx">↓ Exportar problemas</button>
     </div>
     <div class="table-wrap">
       <table><thead><tr>
-        <th>Pedido (LI)</th><th>Cliente</th><th>CEP</th><th>Cidade / UF</th><th>SituaÃ§Ã£o</th><th>Status CEP</th><th>Detalhe</th>
+        <th>Pedido (LI)</th><th>Cliente</th><th>CEP</th><th>Cidade / UF</th><th>Situação</th><th>Status CEP</th><th>Detalhe</th>
       </tr></thead><tbody id="tb"></tbody></table>
     </div>
   </div>
 
   <div class="card" id="initCard">
-    <div class="empty"><div class="empty-icon">ð¦</div><p>Selecione o perÃ­odo e clique em <b>Buscar pedidos</b></p></div>
+    <div class="empty"><div class="empty-icon">📦</div><p>Selecione o período e clique em <b>Buscar pedidos</b></p></div>
   </div>
 
   <div class="footer">
     <img class="footer-logo" src="https://cdn.awsli.com.br/1930/1930166/arquivos/logo-principal-horizontal.png" alt="Dra. Charm">
-    <p class="footer-copy">Â© Dra Charm â Todos os direitos reservados.</p>
+    <p class="footer-copy">© Dra Charm — Todos os direitos reservados.</p>
   </div>
 </div>
 
@@ -159,7 +159,7 @@ g('dtI').value = todayStr();
 g('dtF').value = todayStr();
 g('btnH').onclick = () => { g('dtI').value = todayStr(); g('dtF').value = todayStr(); };
 
-// FIX: funÃ§Ãµes de token no escopo externo (necessÃ¡rio para cep_redo e accessToken global)
+// FIX: funções de token no escopo externo (necessário para cep_redo e accessToken global)
 function lerTokenLocal(){
   try{
     const stored=JSON.parse(localStorage.getItem('bling_access')||'null');
@@ -190,11 +190,11 @@ async function carregarSituacoes() {
 }
 carregarSituacoes();
 
-// FIX: accessToken inicializado com valor do localStorage desde o inÃ­cio
+// FIX: accessToken inicializado com valor do localStorage desde o início
 let pedidos = [], filter = 'todos', accessToken = lerTokenLocal()||null;
 const cepCache = {};
 
-// FIX: cep_redo no escopo correto â auto-busca apÃ³s redirect OAuth
+// FIX: cep_redo no escopo correto — auto-busca após redirect OAuth
 if(sessionStorage.getItem('cep_redo')){
   sessionStorage.removeItem('cep_redo');
   setTimeout(()=>document.getElementById('btnB').click(), 800);
@@ -214,8 +214,8 @@ function simWords(a, b) {
 }
 
 function valLocal(cep) {
-  if (!cep || cep.length !== 8) return { s:'invalido', m:'CEP ausente ou com dÃ­gitos incompletos' };
-  if (/^0+$/.test(cep) || /^(\d)\1{7}$/.test(cep)) return { s:'invalido', m:'CEP invÃ¡lido (sequÃªncia invÃ¡lida)' };
+  if (!cep || cep.length !== 8) return { s:'invalido', m:'CEP ausente ou com dígitos incompletos' };
+  if (/^0+$/.test(cep) || /^(\d)\1{7}$/.test(cep)) return { s:'invalido', m:'CEP inválido (sequência inválida)' };
   return { s:'ok', m:null };
 }
 
@@ -225,7 +225,7 @@ async function valViaCep(cep, cidadeEsp, estadoEsp, ruaEsp) {
     const r = await fetch('https://viacep.com.br/ws/'+cep+'/json/');
     const d = await r.json();
     if (d.erro) {
-      cepCache[cep]={ s:'invalido', m:'CEP nÃ£o existe na base dos Correios', cidade:'', estado:'', rua:'' };
+      cepCache[cep]={ s:'invalido', m:'CEP não existe na base dos Correios', cidade:'', estado:'', rua:'' };
     } else {
       const cidadeVC = d.localidade||'', estadoVC = d.uf||'', ruaVC = d.logradouro||'';
       let s='ok', m=null;
@@ -236,7 +236,7 @@ async function valViaCep(cep, cidadeEsp, estadoEsp, ruaEsp) {
         m='Cidade divergente: CEP aponta '+cidadeVC+'/'+estadoVC+' mas pedido tem '+cidadeEsp+(estadoEsp?'/'+estadoEsp:'');
       }
 
-      // 2. Valida rua (sÃ³ se cidade OK e rua preenchida nos dois lados)
+      // 2. Valida rua (só se cidade OK e rua preenchida nos dois lados)
       if (s==='ok' && ruaEsp && ruaVC && simWords(ruaVC, ruaEsp) < 0.4) {
         s='atencao_rua';
         m='Rua divergente: CEP aponta "'+ruaVC+'" mas pedido tem "'+ruaEsp+'"';
@@ -246,7 +246,7 @@ async function valViaCep(cep, cidadeEsp, estadoEsp, ruaEsp) {
     }
     return cepCache[cep];
   } catch(_) {
-    cepCache[cep]={ s:'invalido', m:'Erro ao consultar ViaCEP (sem conexÃ£o)', cidade:'', estado:'', rua:'' };
+    cepCache[cep]={ s:'invalido', m:'Erro ao consultar ViaCEP (sem conexão)', cidade:'', estado:'', rua:'' };
     return cepCache[cep];
   }
 }
@@ -297,16 +297,16 @@ async function processarLote(lista) {
 }
 
 function fmtCep(c) {
-  if (!c||c.length!==8) return c||'â';
+  if (!c||c.length!==8) return c||'—';
   return c.slice(0,5)+'-'+c.slice(5);
 }
 
 const badges = {
-  ok: '<span class="badge b-ok">â CEP vÃ¡lido</span>',
-  divergencia:'<span class="badge b-div">â  Cidade divergente</span>',
-  atencao_rua:'<span class="badge b-rua">â¡ AtenÃ§Ã£o: rua</span>',
-  invalido: '<span class="badge b-inv">â CEP invÃ¡lido</span>',
-  carregando: '<span class="badge b-load">â³ Verificando...</span>'
+  ok: '<span class="badge b-ok">✓ CEP válido</span>',
+  divergencia:'<span class="badge b-div">⚠ Cidade divergente</span>',
+  atencao_rua:'<span class="badge b-rua">⚡ Atenção: rua</span>',
+  invalido: '<span class="badge b-inv">✗ CEP inválido</span>',
+  carregando: '<span class="badge b-load">⏳ Verificando...</span>'
 };
 
 const sitBadge = s => {
@@ -328,7 +328,7 @@ const sitBadge = s => {
 function renderRow(p) {
   let row = document.getElementById('r-'+p.id);
   const badge = badges[p.cep_s||'carregando']||badges.carregando;
-  const cuf = p.cidade?(p.cidade+(p.estado?' / '+p.estado:'')):'â / â';
+  const cuf = p.cidade?(p.cidade+(p.estado?' / '+p.estado:'')):'— / —';
   const det = p.cep_m?('<div class="det-msg">'+p.cep_m+'</div>'):'';
   const html = (p.numeroLI?'<td><b>'+p.numeroLI+'</b><br><span style="font-size:10px;color:#bbb">Bling '+p.numero+'</span></td>':'<td><b>'+p.numero+'</b></td>')+'<td style="max-width:200px">'+escHtml(p.cliente||'')+'</td>'+
     '<td><span class="mono">'+fmtCep(p.cep)+'</span></td>'+
@@ -375,7 +375,7 @@ g('btnEx').onclick=()=>{
     [p.numeroLI||'',p.numero,p.cliente,p.cep,p.cidade,p.estado,p.rua,p.situacao,p.cep_s,p.cep_m]
     .map(v=>'"'+(v||'').replace(/"/g,'""')+'"').join(',')
   );
-  const csv=['Pedido LI,Pedido Bling,Cliente,CEP,Cidade,UF,Rua,SituaÃ§Ã£o,Status,Mensagem',...rows].join('\n');
+  const csv=['Pedido LI,Pedido Bling,Cliente,CEP,Cidade,UF,Rua,Situação,Status,Mensagem',...rows].join('\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   a.download='problemas_cep.csv'; a.click();
@@ -383,14 +383,14 @@ g('btnEx').onclick=()=>{
 
 g('btnB').onclick=async()=>{
   const dtI=g('dtI').value, dtF=g('dtF').value;
-  if(!dtI||!dtF){alert('Selecione o perÃ­odo');return;}
+  if(!dtI||!dtF){alert('Selecione o período');return;}
   const sitVal=g('selSit').value;
 
   g('errMsg').style.display='none';
   g('btnB').disabled=true; g('btnB').textContent='Buscando...';
   g('initCard').style.display='none'; g('mainArea').style.display='block';
 
-  // FIX: sem 'let' â usa as variÃ¡veis do escopo externo (updateStats funciona corretamente)
+  // FIX: sem 'let' — usa as variáveis do escopo externo (updateStats funciona corretamente)
   pedidos=[]; filter='todos'; accessToken=lerTokenLocal()||null;
 
   try {
@@ -415,7 +415,7 @@ g('btnB').onclick=async()=>{
 
       if (d._t) {
         accessToken = d._t;
-        // FIX: salva o token no localStorage a cada renovaÃ§Ã£o
+        // FIX: salva o token no localStorage a cada renovação
         salvarTokenLocal(d._t);
 
         // Uma vez por sessao: busca situacoes customizadas com token ja obtido
@@ -454,12 +454,12 @@ g('btnB').onclick=async()=>{
     updateStats();
 
     if(!pedidos.length) {
-      g('tb').innerHTML='<tr><td colspan="7" style="text-align:center;padding:40px;color:#bbb">Nenhum pedido encontrado no perÃ­odo</td></tr>';
+      g('tb').innerHTML='<tr><td colspan="7" style="text-align:center;padding:40px;color:#bbb">Nenhum pedido encontrado no período</td></tr>';
     }
   } catch(err){
     g('errMsg').textContent=err.message; g('errMsg').style.display='block';
   }
-  g('btnB').disabled=false; g('btnB').textContent='ð Buscar pedidos';
+  g('btnB').disabled=false; g('btnB').textContent='🔍 Buscar pedidos';
 };
 </script>
 </body>
