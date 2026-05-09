@@ -81,7 +81,7 @@ if (cached) return cached;
 const refreshToken = await lerRefreshToken();
 if (!refreshToken) throw new Error("Token Bling invalido. Acesse /api/setup para reconectar.");
 const creds = Buffer.from(process.env.BLING_CLIENT_ID + ":" + process.env.BLING_CLIENT_SECRET).toString("base64");
-const r = await fetch("https://www.bling.com.br/Api/v3/oauth/token", {
+const r = await fetch("https://api.bling.com.br/Api/v3/oauth/token", {
 method: "POST",
 headers: { "Content-Type": "application/x-www-form-urlencoded", Authorization: "Basic " + creds },
 body: "grant_type=refresh_token&refresh_token=" + encodeURIComponent(refreshToken),
@@ -117,7 +117,7 @@ const { id, token: passedToken, data_inicio, data_fim, pagina = 1 } = req.query;
 if (id) {
 const token = passedToken || await getAccessToken();
 try {
-const blingRes = await fetch("https://www.bling.com.br/Api/v3/pedidos/vendas/" + id, {
+const blingRes = await fetch("https://api.bling.com.br/Api/v3/pedidos/vendas/" + id, {
 headers: { Authorization: "Bearer " + token },
 });
 const d = await blingRes.json();
@@ -143,7 +143,7 @@ const SITUACOES_LEGADO = { em_aberto: 6, atendido: 9, cancelado: 12, em_andament
 if (situacaoId) { paramsObj.idSituacao = situacaoId; }
 else if (situacaoNome && SITUACOES_LEGADO[situacaoNome]) { paramsObj.idSituacao = SITUACOES_LEGADO[situacaoNome]; }
 const params = new URLSearchParams(paramsObj);
-const r = await fetch("https://www.bling.com.br/Api/v3/pedidos/vendas?" + params, {
+const r = await fetch("https://api.bling.com.br/Api/v3/pedidos/vendas?" + params, {
 headers: { Authorization: "Bearer " + token },
 });
 const d = await r.json();
