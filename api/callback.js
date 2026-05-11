@@ -1,4 +1,3 @@
-// Callback do OAuth Bling — salva refresh token, cacheia access_token, redireciona automaticamente
 const PROJ = "prj_ErH4xc9FokreQHv0utp1xJ2eGvdO";
 const TEAM = "team_Hv0Wqku1l7HhDDiJZmR2u5Ze";
 
@@ -11,15 +10,21 @@ function parseEC() {
   } catch (_) { return null; }
 }
 
-async function salvarNoEdgeConfig(items) {
+async function salvarTokensAtomicos(refreshToken, accessToken) {
   const ec = parseEC();
   if (!ec || !process.env.VERCEL_TOKEN) return false;
+  const accessCache = JSON.stringify({ token: accessToken, expires: Date.now() + 55 * 60 * 1000 });
   for (let i = 0; i < 3; i++) {
     try {
       const r = await fetch("https://api.vercel.com/v1/edge-config/" + ec.ecId + "/items", {
         method: "PATCH",
         headers: { Authorization: "Bearer " + process.env.VERCEL_TOKEN, "Content-Type": "application/json" },
-        body: JSON.stringify({ items }),
+        body: JSON.stringify({
+          items: [
+            { operation: "upsert", key: "bling_refresh_token", value: refreshToken },
+            { operation: "upsert", key: "bling_access_cache", value: accessCache }
+          ]
+        }),
       });
       if (r.ok) return true;
     } catch (_) {}
@@ -30,38 +35,48 @@ async function salvarNoEdgeConfig(items) {
 
 export default async function handler(req, res) {
   const { code } = req.query;
-  if (!code) return res.status(400).send("Parametro code ausente.");
+  if (!code) return res.status(400).send("Falta o parametro code");
 
-  const creds = Buffer.from(process.env.BLING_CLIENT_ID + ":" + process.env.BLING_CLIENT_SECRET).toString("base64");
-  const tokenRes = await fetch("https://www.bling.com.br/Api/v3/oauth/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded", Authorization: "Basic " + creds },
-    body: "grant_type=authorization_code&code=" + encodeURIComponent(code),
-  });
+  try {
+    const creds = Buffer.from(process.env.BLING_CLIENT_ID + ":" + process.env.BLING_CLIENT_SECRET).toString("base64");
+    const tokRes = await fetch("https://api.bling.com.br/Api/v3/oauth/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: "Basic " + creds,
+      },
+      body: "grant_type=authorization_code&code=" + encodeURIComponent(code),
+    });
+    const d = await tokRes.json();
+    if (!d.access_token || !d.refresh_token) {
+      return res.status(500).json({ erro: "Falha ao trocar code por token", detalhes: d });
+    }
 
-  const tokenData = await tokenRes.json();
-  if (!tokenData.refresh_token) return res.status(500).send("Erro ao obter token: " + JSON.stringify(tokenData));
+    await salvarTokensAtomicos(d.refresh_token, d.access_token);
 
-  // Salva refresh_token E cacheia access_token (55min) num unico PATCH para atomicidade
-  const cache = JSON.stringify({ token: tokenData.access_token, expires: Date.now() + 55 * 60 * 1000 });
-  await salvarNoEdgeConfig([
-    { operation: "upsert", key: "bling_refresh_token", value: tokenData.refresh_token },
-    { operation: "upsert", key: "bling_access_cache", value: cache },
-  ]);
-
-  // Redireciona automaticamente, salvando access_token no sessionStorage do browser
-  const at = tokenData.access_token || '';
-  res.setHeader("Content-Type", "text/html");
-  return res.status(200).send(`
-    <html><head><meta charset="UTF-8"></head>
-    <body style="font-family:sans-serif;text-align:center;padding:60px;color:#888">
-      <p>✓ Conectado ao Bling! Redirecionando...</p>
-      <script>
-        try { localStorage.setItem('bling_access', JSON.stringify({token:'${at}',exp:Date.now()+55*60*1000})); } catch(_) {}
-        sessionStorage.removeItem('cep_redo'); sessionStorage.removeItem('bling_at');
-        sessionStorage.removeItem('cep_redirect_after_auth');
-        window.location.href = '/';
-      </script>
-    </body></html>
-  `);
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    return res.send(`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Conectado</title>
+<style>body{font-family:sans-serif;text-align:center;padding:40px}</style>
+</head>
+<body>
+<h2>Conectado com sucesso ao Bling!</h2>
+<p>Salvando token... voce sera redirecionado em 1s.</p>
+<script>
+try {
+  localStorage.setItem('bling_access', JSON.stringify({
+    token: ${JSON.stringify(d.access_token)},
+    exp: Date.now() + 55 * 60 * 1000
+  }));
+} catch(_) {}
+setTimeout(function(){ window.location.href = '/'; }, 1000);
+</script>
+</body>
+</html>`);
+  } catch (err) {
+    return res.status(500).json({ erro: err.message });
+  }
 }
